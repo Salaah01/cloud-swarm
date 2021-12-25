@@ -1,18 +1,21 @@
 #!/usr/bin/bash
 
-# Script to ssh into a server, and setup the server for benchmarking.
-ssh -o "StrictHostKeyChecking no" ubuntu@$1 "sudo apt update; sudo apt upgrade -y; sudo apt update; sudo apt install apache2-utils -y"
+# Script to ssh into a server, and setup the server for benchmarking. Try
+# this every 5 seconds until 30 seconds at which point it will exit.
 
-# If ssh connection is refused, try again after a short delay.
-if [ $? -ne 0 ]; then
-  echo -e "\033[91mConnection refused. Retrying in 5 seconds...\033[0m"
+wait_time=0
+while [ $wait_time -lt 30 ]; do
   sleep 5
-  ssh -o "StrictHostKeyChecking no" ubuntu@$1 "sudo apt update; sudo apt upgrade -y; sudo apt update; sudo apt install apache2-utils -y"
-fi
+  wait_time=$((wait_time + 5))
 
-# If ssh connection is refused, try again after a longer delay.
-if [ $? -ne 0 ]; then
-  echo -e "\033[91mConnection refused. Retrying in 10 seconds...\033[0m"
-  sleep 10
-  ssh -o "StrictHostKeyChecking no" ubuntu@$1 "sudo apt update; sudo apt upgrade -y; sudo apt update; sudo apt install apache2-utils -y"
-fi
+  commands='sudo apt update;'
+  commands+='sudo apt upgrade -y;'
+  commands+='sudo apt update;'
+  commands+='sudo apt install -y apache2;'
+
+  ssh -o "StrictHostKeyChecking no" ubuntu@$1 "$commands"
+
+  if [ $? -eq 0 ]; then
+    break
+  fi
+done

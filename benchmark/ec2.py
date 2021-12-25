@@ -18,19 +18,17 @@ SECURITY_GROUPS = ['sg-0181cc2e6e7afc2d3']
 ec2 = boto3.resource('ec2')
 
 
-def create_instance(
+def create_instances(
+    num_instances=1,
     image_id=IMAGE_ID,
     instance_type=INSTANCE_TYPE,
-    min_count=1,
-    max_count=1,
     key_name='ec2-key-pair'
 ) -> _t.List:
     """Creates EC2 instances
     Args:
+        num_instances (int): Number of instances to create
         image_id (str): AMI ID
         instance_type (str): Instance type
-        min_count (int): Minimum number of instances to create
-        max_count (int): Maximum number of instances to create
         key_name (str): Name of the key pair
     Returns:
         list: List of instances
@@ -38,8 +36,8 @@ def create_instance(
     instances = ec2.create_instances(
         ImageId=image_id,
         InstanceType=instance_type,
-        MinCount=min_count,
-        MaxCount=max_count,
+        MinCount=num_instances,
+        MaxCount=num_instances,
         KeyName=key_name,
     )
 
@@ -57,6 +55,17 @@ def create_instance(
     return instances
 
 
+def terminate_instances(instances) -> None:
+    """Terminates the instances
+    Args:
+        instances (list): List of instances to terminate
+    Returns:
+        None
+    """
+    for instance in instances:
+        instance.terminate()
+
+
 def _setup_instance(instance) -> None:
     """Setups the instance by running a setup script once it is ready.
     Args:
@@ -69,10 +78,6 @@ def _setup_instance(instance) -> None:
 
     # Add the instance to a security group that allows SSH access
     instance.modify_attribute(Groups=SECURITY_GROUPS)
-
-    # Wait for SSH to be available
-    print(f'\033[92mWaiting for {instance.id} to be ready\033[0m')
-    time.sleep(10)
 
     # Run the setup script
     exit_code = subprocess.call([

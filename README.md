@@ -1,7 +1,7 @@
 # Web Horde
 
 ## Installation
-1. Create virtual environment and install dependencies.
+### Create virtual environment and install dependencies.
 
 **Linux/Mac OS**
 ```sh
