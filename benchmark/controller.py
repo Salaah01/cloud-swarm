@@ -4,9 +4,11 @@ needed to benchmark a site.
 
 import typing as _t
 import os
+import logging
 import subprocess
 import threading
 import time
+import json
 from datetime import datetime, timedelta
 try:
     from . import ec2
@@ -166,9 +168,45 @@ class MasterNode:
             time.sleep(sleep_time.total_seconds())
         node.benchmark_results()
 
+    def calculate_results(self) -> _t.Dict[str, _t.Any]:
+        """Given the benchmark results from each node, calculates an overall
+        result.
+
+        Returns:
+            Dict[str, Any]: Result of the benchmark
+        """
+        complete_requests = 0
+        failed_requests = 0
+
+        # Extract the results from each node.
+        results = []
+        for node in self.nodes:
+            results_fp = os.path.join(BASE_DIR, 'results', f'{node.host}.json')
+            if not os.path.exists(results_fp):
+                failed_requests += self.requests_per_node
+                continue
+            with open(results_fp, 'r') as f:
+                result = json.load(f)
+            complete_requests += result['complete_requests']
+            failed_requests += result['failed_requests']
+            results.append(result)
+
+        # Blend the results calculating the min, max and average.
+        min_time = min(result['min'] for result in results)
+        max_time = max(result['max'] for result in results)
+        mean_time = sum(result['mean'] for result in results) / len(results)
+
+        return {
+            'min': min_time,
+            'max': max_time,
+            'mean': mean_time,
+            'complete_requests': complete_requests,
+            'failed_requests': failed_requests
+        }
+
 
 if __name__ == '__main__':
-    master = MasterNode(num_nodes=2, requests_per_node=10)
-    master.spawn_nodes()
-    master.execute_tasks()
-    master.terminate_nodes()
+    with MasterNode(num_nodes=2, requests_per_node=10) as master:
+        master.execute_tasks()
+        results = master.calculate_results()
+        print(results)
