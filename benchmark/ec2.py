@@ -85,6 +85,8 @@ def _setup_instance(instance) -> None:
         instance.public_ip_address
     ])
     if exit_code != 0:
-        raise Exception(f'Setup script failed with exit code {exit_code}')
+        raise Exception(
+            f'\033[91m{self.instance.id} setup failed with exit code {exit_code}\033[0m'
+        )
 
     print(f'\033[92mFinished setting up {instance.id}\033[0m')

@@ -18,4 +18,5 @@ while [ $wait_time -lt 30 ]; do
   if [ $? -eq 0 ]; then
     break
   fi
+  echo -e '\033[91mFailed to setup server, trying in 5 seconds...\033[0m'
 done

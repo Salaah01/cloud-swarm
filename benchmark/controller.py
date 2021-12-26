@@ -6,6 +6,7 @@ import typing as _t
 import os
 import subprocess
 import threading
+import time
 from datetime import datetime, timedelta
 try:
     from . import ec2
@@ -13,13 +14,11 @@ except ImportError:
     import ec2
 
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
 class SlaveNode:
     """Represents a node that is used to carry out a benchmark."""
-
-    BENCHMARK_SETUP_SCRIPT = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        'benchmark_setup.sh'
-    )
 
     def __init__(self, instance):
         """Creates a slave node.
@@ -27,6 +26,7 @@ class SlaveNode:
             instance (boto3.resources.ec2.Instance): Instance to use
         """
         self.instance = instance
+        self.host = instance.public_ip_address
 
     def schedule_benchmark(self, ts: datetime, num_requests: int, url: str):
         """Schedules a benchmark on the node.
@@ -36,15 +36,19 @@ class SlaveNode:
             url (str): URL to benchmark
         """
         subprocess.call([
-            self.BENCHMARK_SETUP_SCRIPT,
-            self.instance.public_ip_address,
+            os.path.join(BASE_DIR, 'benchmark_setup.sh'),
+            self.host,
             ts.strftime('%m%d%H%M'),
             str(num_requests),
             url
         ])
 
-    def results_benchmark(self):
+    def benchmark_results(self):
         """Returns the results of the benchmark."""
+        subprocess.call([
+            os.path.join(BASE_DIR, 'benchmark_results.sh'),
+            self.host
+        ])
 
 
 class MasterNode:
@@ -81,6 +85,14 @@ class MasterNode:
         """Exits the context manager."""
         self.terminate_nodes()
 
+    def __iter__(self):
+        """Iterates over the nodes."""
+        return iter(self.nodes)
+
+    def __len__(self):
+        """Returns the number of nodes."""
+        return len(self.nodes)
+
     def instances(self) -> _t.List:
         """Returns the list of instances."""
         return [node.instance for node in self.nodes]
@@ -96,12 +108,22 @@ class MasterNode:
         ec2.terminate_instances(self.instances())
         self.nodes = []
 
+    def benchmark_start_ts(self) -> datetime:
+        """Lazy getter for when the benchmark run should start."""
+        if not hasattr(self, '_benchmark_start_ts'):
+            # Assume that it takes 1.5 seconds to schedule the benchmark.
+            ms_to_setup = 1500
+            self._benchmark_start_ts = datetime.now() + timedelta(
+                milliseconds=len(self.nodes) * ms_to_setup
+            )
+        return self._benchmark_start_ts
+
     def execute_tasks(self) -> None:
         """Executes a set of tasks on all node."""
         threads = []
         for node in self.nodes:
             t = threading.Thread(
-                target=self._execute_tasks_on_node,
+                target=self.execute_tasks_on_node,
                 args=(node,)
             )
             t.start()
@@ -110,42 +132,43 @@ class MasterNode:
         for t in threads:
             t.join()
 
-    def _execute_tasks_on_node(self, node) -> None:
-        """Executes the tasks a node.
-        Args:
-            node (SlaveNode): Node to execute the task on
-        Returns:
-            None
-        """
-        tasks = [self._execute_task_schedule_benchmark]
+    def execute_tasks_on_node(self, node) -> None:
+        """Executes the tasks on a single node."""
+        tasks = [
+            self._execute_task_schedule_benchmark,
+            self._execute_task_benchmark_results
+        ]
         for task in tasks:
             task(node)
 
     def _execute_task_schedule_benchmark(self, node: SlaveNode) -> None:
-        """Executes the task to schedule the benchmark.
+        """Executes the task to schedule the benchmark."""
+        node.schedule_benchmark(
+            self.benchmark_start_ts(),
+            self.requests_per_node,
+            self.url
+        )
+
+    def _execute_task_benchmark_results(self, node: SlaveNode) -> None:
+        """Executes the task to get the benchmark results.
         Args:
             node (SlaveNode): Node to execute the task on
         Returns:
             None
         """
-
-        # Assume that it takes 1.5 seconds to schedule the benchmark.
-        ms_to_setup = 1500
-
-        schedule_at = datetime.now() + timedelta(
-            milliseconds=len(self.nodes) * ms_to_setup
-        )
-
-        # Schedule the benchmark
-        node.schedule_benchmark(
-            schedule_at,
-            self.requests_per_node,
-            self.url
-        )
+        # Check that the benchmark has finished (base this on the scheduled
+        # start time).
+        if datetime.now() < self.benchmark_start_ts():
+            sleep_time = self.benchmark_start_ts() - datetime.now()
+            print(
+                f'[{datetime.now().strftime("%H:%M")}] Results not ready, sleeping for {sleep_time}'
+            )
+            time.sleep(sleep_time.total_seconds())
+        node.benchmark_results()
 
 
 if __name__ == '__main__':
-    # with MasterNode(num_nodes=2, requests_per_node=10) as master:
-    #     print(master.execute_tasks())
     master = MasterNode(num_nodes=2, requests_per_node=10)
+    master.spawn_nodes()
     master.execute_tasks()
+    master.terminate_nodes()

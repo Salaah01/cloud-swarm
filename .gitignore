@@ -260,8 +260,6 @@ nginx/prod/certbot/conf/keys*
 nginx/prod/certbot/conf/archive
 nginx/prod/certbot/conf/live
 nginx/prod/certbot/conf/accounts
-cerbox/
-certbox/
 certbot/
 temp_scripts/
 secrets/
@@ -269,3 +267,4 @@ secrets/
 icons-original.css
 (js|css).LICENSE.txt*
 *Zone.Identifier
+results
