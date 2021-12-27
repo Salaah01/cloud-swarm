@@ -1,5 +1,5 @@
 """
-WSGI config for web_horde project.
+WSGI config for cloud_swarm project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -13,7 +13,7 @@ from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault(
     'DJANGO_SETTINGS_MODULE',
-    'web_horde.settings.production'
+    'cloud_swarm.settings.production'
 )
 
 application = get_wsgi_application()

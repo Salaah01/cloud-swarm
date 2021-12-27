@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100)),
-                ('slug', models.SlugField(max_length=100, unique=True)),
+                ('slug', models.SlugField(max_length=100)),
                 ('domain', models.CharField(max_length=100)),
                 ('txt_record', models.CharField(blank=True, max_length=100)),
                 ('created_on', models.DateTimeField(auto_now_add=True)),

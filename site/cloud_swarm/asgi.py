@@ -15,7 +15,7 @@ from django.core.asgi import get_asgi_application
 
 os.environ.setdefault(
     'DJANGO_SETTINGS_MODULE',
-    'web_horde.settings.production'
+    'cloud_swarm.settings.production'
 )
 
 application = ProtocolTypeRouter({
