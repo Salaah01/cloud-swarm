@@ -3,4 +3,6 @@ channels-redis==3.3.1
 Django==4.0
 django-debug-toolbar==3.2.4
 django-redis==5.2.0
+dnspython==2.1.0
 psycopg2==2.9.2
+python-decouple==3.5
