@@ -1,0 +1,53 @@
+.messages {
+  position: fixed;
+  top: 7rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  text-align: center;
+  padding: 2rem;
+  opacity: 100%;
+  animation-name: fadeOutRem;
+  animation-duration: 2s;
+  animation-delay: 2s;
+  animation-fill-mode: forwards;
+  -webkit-animation-fill-mode: forwards;
+  z-index: 9999;
+
+  &--no-fade {
+    animation-name: none !important;
+  }
+}
+
+.message {
+  position: relative;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.25rem;
+
+  &--success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+  }
+
+  &--error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+  }
+
+  &__text {
+    display: block;
+    max-width: 93%;
+  }
+
+  &__icon {
+    position: absolute;
+    right: 1%;
+    font-size: 1.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+}

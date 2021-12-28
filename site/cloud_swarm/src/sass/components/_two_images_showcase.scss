@@ -1,0 +1,85 @@
+@import "../../sass/abstracts/variables";
+@import "../../sass/abstracts/mixins";
+
+.two-images-showcase {
+  padding: 5rem 2rem;
+
+  @include mediaQuery(1200) {
+    padding: 3rem 2rem;
+  }
+
+  @include mediaQuery(950) {
+    padding: 1.5rem 2rem;
+  }
+
+  @include mediaQuery(900) {
+    padding: 1.5rem 2rem;
+  }
+
+  @include mediaQuery(700) {
+    padding: 0.5rem 2rem;
+  }
+
+  @include mediaQuery(600) {
+    padding: 0.5rem 1rem;
+  }
+
+  &__heading {
+    text-align: center;
+    padding: 1rem 0;
+
+    @include mediaQuery(600) {
+      padding: 1rem 0 0.5rem;
+    }
+
+    @include mediaQuery(400) {
+      padding: 1rem 0 0;
+    }
+  }
+
+  &__imgs {
+    display: flex;
+    justify-content: center;
+  }
+
+  &__item {
+    width: 100%;
+    height: 100%;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+
+    @include mediaQuery(600) {
+      padding: 2rem 0.5rem;
+    }
+
+    @include mediaQuery(500) {
+      width: 50vw;
+      &:first-of-type {
+        display: none;
+      }
+    }
+
+    &__btn {
+      margin: 1rem auto 0;
+
+      span {
+        @include mediaQuery(400) {
+          display: none;
+        }
+      }
+    }
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: scale(1.01);
+      filter: brightness(120%);
+    }
+  }
+}

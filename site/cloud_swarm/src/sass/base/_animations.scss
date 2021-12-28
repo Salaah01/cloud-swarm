@@ -1,0 +1,37 @@
+@keyframes fadeOutRem {
+  0% {
+    opacity: 100%;
+  }
+
+  99.9999999% {
+    opacity: 0;
+  }
+
+  100% {
+    display: none;
+    padding: 0;
+    margin: 0;
+    height: 0;
+    overflow: hidden;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 100%;
+    overflow: hidden;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "site",
+  "version": "0.0.1",
+  "description": "Cloud Swarm site.",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm run watch:main\"",
+    "build": "npm-run-all build:*",
+    "watch:main": "concurrently \"npm run watch:main:css\"",
+    "build:main": "npm-run-all build:main:css",
+    "watch:main:css": "node-sass cloud_swarm/src/sass/main.scss cloud_swarm/static/css/main.min.css -w",
+    "compile:main:css": "node-sass cloud_swarm/src/sass/main.scss cloud_swarm/static/css/main.min.css --output-style compressed",
+    "prefix:main:css": "postcss --use autoprefixer -b \"last 10 versions\" cloud_swarm/static/css/main.min.css -o cloud_swarm/static/css/main.min.css",
+    "compress:main:css": "node-sass cloud_swarm/static/css/main.min.css cloud_swarm/static/css/main.min.css --output-style compressed",
+    "build:main:css": "npm-run-all compile:main:css prefix:main:css compress:main:css"
+  },
+  "author": "Salaah Amin",
+  "devDependencies": {
+    "autoprefixer": "^10.4.0",
+    "concurrently": "^6.5.1",
+    "node-sass": "^4.14.1",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.5",
+    "postcss-cli": "^9.1.0"
+  },
+  "browsers": [
+    ">1%",
+    "last 4 versions",
+    "Firefox ESR",
+    "not ie < 9"
+  ]
+}

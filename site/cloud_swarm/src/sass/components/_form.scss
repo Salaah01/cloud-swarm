@@ -1,0 +1,36 @@
+@import "../abstracts/variables";
+
+.form {
+  &__form-element {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__label {
+    font-size: 1.2rem;
+    margin-bottom: 0.25rem;
+  }
+
+  &__input,
+  &__textarea {
+    border-radius: 3px;
+    padding: 0.75rem 1rem;
+  }
+
+  &__input {
+    height: 3rem;
+    outline: none;
+    border: 1px solid $colour-grey-dark-1;
+    margin-bottom: 1rem;
+  }
+
+  &__textarea {
+    font-family: inherit;
+    margin-bottom: 1rem;
+  }
+
+  &__btn {
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+}

@@ -1,0 +1,45 @@
+// =============================================================================
+// Date Created:   25/12/2019
+// Created By:     Salaah Amin
+// =============================================================================
+// Stars component. Used for ratings.
+// =============================================================================
+
+// =============================================================================
+.i-star {
+  color: $colour-grey-light-3;
+  transition: all 0.2s ease;
+
+  &--half-checked {
+    background: linear-gradient(
+      90deg,
+      gold 0%,
+      gold 50%,
+      $colour-grey-light-3 50%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  &--checked {
+    color: gold;
+  }
+
+  // ---------------------------------------------------------------------------
+  &--selectable {
+    // Modifier for clickable rating stars.
+    // On hover of a star, javaScript will set an attribute of highlight="true".
+    cursor: pointer;
+
+    &[highlight="true"] {
+      color: gold;
+      font-size: 1.65rem;
+    }
+  }
+}
+
+.rating {
+  &__count {
+    display: inline-block;
+  }
+}

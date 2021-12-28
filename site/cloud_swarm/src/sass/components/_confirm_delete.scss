@@ -1,0 +1,61 @@
+// =============================================================================
+// Date Created:   03/02/2019
+// Created By:     Salaah Amin
+// =============================================================================
+// Confirm delete overlay.
+// A fullscreen div with an inner div asking user the confirm delete.
+// =============================================================================
+
+// =============================================================================
+.confirm-delete {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: rgba($colour-grey-dark-1, 0.75);
+
+  &__inner-container {
+    padding: 7rem 5rem;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: $box-shadow-4;
+    width: 50%;
+
+    @include mediaQuery(900) {
+      width: 75%;
+    }
+  }
+
+  &__icon {
+    color: $colour-notification;
+    font-size: 7rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &__title {
+    margin-bottom: 1rem;
+
+    @include mediaQuery(600) {
+      font-size: 3rem;
+      padding: 4rem 2rem;
+    }
+  }
+
+  &__text {
+    margin-bottom: 3rem;
+    font-size: 1.75rem;
+    line-height: 2.5rem;
+  }
+
+  &__btn {
+    &:not(:last-of-type) {
+      margin-right: 0.5rem;
+    }
+  }
+}

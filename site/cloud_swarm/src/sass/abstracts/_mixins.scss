@@ -1,0 +1,15 @@
+@mixin absCenter {
+  // Positions an element to the center relative to its closest parent
+  // element.
+  // Note: parent element must have its position defined.
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@mixin mediaQuery($maxWidth) {
+  @media only screen and (max-width: ($maxWidth/16) + "em") {
+    @content;
+  }
+}

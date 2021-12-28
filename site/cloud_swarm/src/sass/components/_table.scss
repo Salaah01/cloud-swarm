@@ -1,0 +1,45 @@
+@import "../abstracts/variables";
+@import "../abstracts/mixins";
+
+.table {
+  border-spacing: 0;
+  border-collapse: collapse;
+
+  li {
+    list-style: unset;
+  }
+
+  td,
+  th {
+    border: 0;
+    border-left: 1px solid #eee;
+    padding: 10px 25px;
+
+    @include mediaQuery(700) {
+      padding: 10px 15px;
+    }
+
+    @include mediaQuery(570) {
+      padding: 10px;
+    }
+
+    @include mediaQuery(400) {
+      padding: 10px 5px;
+    }
+  }
+
+  td:first-child,
+  th:first-child {
+    border: 0;
+  }
+
+  tbody tr:nth-child(even) {
+    background-color: #f7f7f7;
+  }
+
+  th {
+    border: none;
+    color: #fff;
+    background-color: $colour-primary;
+  }
+}

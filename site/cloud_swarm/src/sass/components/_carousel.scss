@@ -1,0 +1,124 @@
+@import "../abstracts/mixins";
+
+.carousel {
+  position: relative;
+  width: 80%;
+
+  &__picture {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+  }
+  
+  &__img {
+    width: 90%;
+    height: 100%;
+    object-fit: contain;
+    margin: 0 auto;
+
+    @include mediaQuery(670) {
+      width: 75%;
+    }
+  }
+
+  &__track-container {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  &__track {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    position: relative;
+    height: 100%;
+    transition: transform 250ms ease-in;
+  }
+
+  &__slide {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+  }
+
+  &__button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    outline: none;
+    border: none;
+    background: transparent;
+    font-size: 4rem;
+    color: rgba(0, 0, 0, 0.3);
+    transition: color 0.2s ease-in;
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    &:active {
+      color: rgba(0, 0, 0, 0.75);
+      transform: translate(0.75px, -47%);
+    }
+
+    &--left {
+      left: 25px;
+      z-index: 100;
+
+      @include mediaQuery(800) {
+        left: 60px;
+        font-size: 5rem;
+      }
+
+      @include mediaQuery(670) {
+        left: 30px;
+      }
+    }
+
+    &--right {
+      right: 25px;
+      z-index: 100;
+
+      @include mediaQuery(800) {
+        right: 45px;
+        font-size: 5rem;
+      }
+
+      @include mediaQuery(670) {
+        right: 15px;
+      }
+    }
+  }
+
+  &__nav {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+  }
+
+  &__indicator {
+    border: 0;
+    outline: none;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    background-color: rgba(0, 0, 0, 0.3);
+    margin: 0 10px;
+    transition: 0.15s ease-in;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    &--current,
+    &--current:hover {
+      background-color: rgba(0, 0, 0, 0.75);
+    }
+  }
+}

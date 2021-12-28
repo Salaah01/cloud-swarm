@@ -1,0 +1,89 @@
+// =============================================================================
+// Date Created:   25/12/2019
+// Created By:     Salaah Amin
+// =============================================================================
+// DESCRIPTION
+// -----------
+// Styling for a quantity button.
+// Consists of an input box of type number in between two button elements
+// which would control the quantity (value inside the input).
+//
+// HTML FORMAT
+// -----------
+// <div class="c-quantity">
+//   <button class="c-quantity__btn" control="quantity-down">
+//     <span class="c-quantity__btn__text">&#45;</span>
+//   </button>
+//   <input class="c-quantity__input" type="number"/>
+//   <button class="c-quantity__btn" control="quantity-up">
+//     <span class="c-quantity__btn__text">&#45;</span>
+//   </button>
+// </div>
+//
+// DEPENDENCIES
+// ------------
+// quantity.ts
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+@import '../abstracts/variables';
+
+.c-quantity {
+  display: flex;
+  border: 1px solid $colour-grey-dark-1;
+  height: fit-content;
+
+  &[invalid="true"] {
+    box-shadow: 0 0 2px 2px #ff0001;
+  }
+
+  &__btn,
+  &__input {
+    justify-content: center;
+    padding: 1rem;
+    border: none;
+    background-color: #fff;
+  }
+
+  &__btn {
+    flex-basis: 25%;
+    cursor: pointer;
+    outline: none;
+    width: 5rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    &:hover {
+      background-color: rgba($colour-secondary, .4);
+    }
+
+    &:active {
+      background-color: rgba($colour-secondary, .7);
+    }
+
+    &[disabled="disabled"] {
+      background-color: #e4e4e4;
+      color: #9e9e9e;
+    }
+
+    &:not([disabled="disabled"]):active {
+      transform: translate(1px, 1px);
+    }
+  }
+
+  &__input {
+    flex-basis: 50%;
+    text-align: center;
+    font-size: 1.5rem;
+    -moz-appearance: textfield;
+
+    &:focus {
+      outline: none;
+    }
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+}

@@ -1,0 +1,25 @@
+@import "../base/animations";
+
+.grey-overlay {
+  &__bg {
+    z-index: 999999999999;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: rgba(#000, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__loading-circle {
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #3498db;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+  }
+}

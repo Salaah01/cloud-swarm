@@ -1,0 +1,262 @@
+/**Contains generic styles for the site. */
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+svg {
+  width: 10px;
+  height: 10px;
+  fill: black;
+}
+
+.btn,
+.btn-inline {
+  outline: none;
+  background-color: transparent;
+  border: none;
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease-out;
+}
+
+.btn {
+  position: relative;
+  padding: 1rem 1.5rem;
+  color: #fff;
+  display: inline-block;
+
+  &:active {
+    transform: translate(2px, 2px);
+  }
+
+  &:disabled {
+    background-color: $colour-grey-light-3;
+    color: $colour-grey-dark-1;
+
+    &:hover {
+      background-color: $colour-grey-light-3;
+      color: $colour-grey-dark-1;
+      cursor: not-allowed;
+    }
+  }
+
+  &--primary {
+    background-color: $colour-primary;
+
+    &:hover {
+      background-color: darken($colour-primary, 10%);
+    }
+  }
+
+  &--secondary {
+    background-color: $colour-secondary;
+
+    &:hover {
+      background-color: darken($colour-secondary, 10%);
+    }
+  }
+
+  &--white {
+    background-color: $colour-white-2;
+    color: #000;
+
+    &:hover {
+      background-color: $colour-white-1;
+    }
+  }
+
+  &--grey {
+    background-color: rgb(194, 191, 191);
+
+    &:hover {
+      background-color: rgb(116, 116, 116);
+    }
+  }
+
+  &--red {
+    background-color: #dc3545;
+
+    &:hover {
+      background-color: #bd2130;
+    }
+  }
+
+  &--green {
+    background-color: #28a745;
+
+    &:hover {
+      background-color: #218838;
+    }
+  }
+}
+
+.btn-inline {
+  text-transform: uppercase;
+  color: currentColor;
+  display: inline-block;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid transparent;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+
+  &--primary,
+  &--primary:link,
+  &--primary:visited,
+  &--primary-b,
+  &--primary-b:link,
+  &--primary-b:visited {
+    color: $colour-primary;
+    border-bottom: 1px solid $colour-primary;
+  }
+
+  &--primary-b:active,
+  &--secondary-b:active {
+    transform: translate(2px, 2px);
+  }
+
+  &--primary {
+    &:hover {
+      color: darken($colour-primary, 10%);
+    }
+  }
+
+  &--secondary,
+  &--secondary:link,
+  &--secondary:visited,
+  &--secondary-b,
+  &--secondary-b:link,
+  &--secondary-b:visited {
+    color: $colour-secondary;
+    border-bottom: 1px solid $colour-secondary;
+  }
+
+  &--secondary {
+    &:hover {
+      color: darken($colour-secondary, 10%);
+      border-bottom: 1px solid darken($colour-secondary, 10%);
+    }
+  }
+
+  &--secondary-b {
+    padding: 1rem;
+
+    &:hover {
+      color: $colour-white-1;
+      background-color: darken($colour-secondary, 10%);
+      border-bottom: 1px solid transparent;
+      padding: 1rem;
+      border-radius: 5px;
+    }
+
+    &:active {
+      background-color: $colour-secondary;
+    }
+  }
+}
+
+.btn-a {
+  text-decoration: none;
+  padding: 0;
+  outline: none;
+  border-bottom: none;
+  transition: all 0.3s ease;
+
+  &--secondary,
+  &--secondary:link,
+  &--secondary:visited {
+    color: $colour-secondary;
+
+    &:hover {
+      color: darken($colour-secondary, 10%);
+    }
+  }
+}
+
+.btn--rounded-sides {
+  border-radius: 2.5rem;
+  padding: 1rem 3rem;
+}
+
+// ----------------------------------------------------------------------------
+// TEXT LINKS
+.text-link {
+  cursor: pointer;
+  text-decoration: none;
+  color: $colour-secondary;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+  width: max-content;
+
+  &:hover {
+    border-bottom: 1px solid darken($colour-secondary, 10%);
+    color: darken($colour-secondary, 10%);
+  }
+}
+
+.footer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap-reverse;
+  align-items: center;
+  font-size: 1.4rem;
+  background-color: black;
+  padding: 1rem 1.5rem;
+
+  &__links {
+    a,
+    a:link,
+    a:visited {
+      display: inline-block;
+      padding: 0.45rem;
+      margin: 0.5rem;
+      padding-bottom: 1.25rem;
+      color: #fff;
+      font-weight: 100;
+      text-decoration: none;
+      padding-right: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    a:hover {
+      color: rgba(#fff, 0.9);
+    }
+  }
+}
+.social-link {
+  display: inline-block;
+  font-size: 2.2rem;
+  color: #fff;
+  padding: 1.2rem;
+
+  &:hover {
+    color: rgba(#fff, 0.9);
+  }
+}
+
+.old-price {
+  text-decoration: line-through;
+  position: relative;
+  color: $colour-grey-dark-1;
+}
+
+// Generic share button.
+.share-icon {
+  height: 2rem;
+  width: 2rem;
+  fill: #459cff;
+  cursor: pointer;
+}
