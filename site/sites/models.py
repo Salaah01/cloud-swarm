@@ -1,9 +1,10 @@
 import typing as _t
 import hashlib
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.utils import timezone
 from django.utils.text import slugify
 from dns import resolver
 
@@ -152,6 +153,15 @@ class SiteAccess(models.Model):
             self.AuthLevels.ADMIN
         ]
 
+    def user_has_auth(self, auth_level: int) -> bool:
+        """Check if the user has the given auth level.
+        Args:
+            auth_level (int): The auth level to check.
+        Returns:
+            bool: True if the user has the given auth level.
+        """
+        return self.auth_level >= auth_level
+
     @classmethod
     def user_access(
         cls,
@@ -174,24 +184,45 @@ class SiteAccess(models.Model):
         except cls.DoesNotExist:
             return None
 
+
+class VerificationCheckLog(models.Model):
+    """A log of verification checks."""
+
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_on']
+
+    def __str__(self):
+        return f'{self.site} - {self.created_on}'
+
     @classmethod
-    def user_for_site_id_slug(
-        cls,
-        site_id: int,
-        site_slug: str,
-        user: User,
-        auth_level: int = 0,
-    ) -> _t.Union['SiteAccess', None]:
-        """Get the site access record for a user.
+    def can_run_check(cls, site: Site) -> bool:
+        """Check if a verification check can run. This is to prevent a site
+        from being checked too frequently.
         Args:
-            site_id (int): The site ID.
-            site_slug (str): The site slug.
-            user (User): The user to get access for.
-            auth_level (int): The user's auth level.
+            site (Site): The site to check.
+        Returns:
+            bool: True if the check can run.
         """
-        if not user or not user.is_authenticated:
-            return None
-        site = Site.for_id_slug(site_id, site_slug)
-        if not site:
-            return None
-        return cls.user_access(site, user)
+
+        return not cls.objects.filter(
+            site=site,
+            created_on__gte=timezone.now() - timedelta(seconds=30)
+        ).exists()
+
+    @classmethod
+    def add_log(cls, site: Site, user: User) -> 'VerificationCheckLog':
+        """Add a verification check log.
+        Args:
+            site (Site): The site to check.
+            user (User): The user to check.
+        """
+        log = cls.objects.create(
+            site=site,
+            user=user,
+        )
+        log.save()
+        return log

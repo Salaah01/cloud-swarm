@@ -1,19 +1,22 @@
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.contrib import messages
 from django.views import View
 from django.urls import reverse
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from .. import forms
 
 
 class NewSite(View):
     """View for registering a new site."""
 
+    @login_required
     def get(self, request: HttpRequest) -> HttpResponse:
         """GET request handler."""
         form = forms.NewSiteForm()
         return render(request, 'sites/new_site.html', {'form': form})
 
+    @login_required
     def post(self, request: HttpRequest) -> HttpResponse:
         """POST request handler."""
         form = forms.NewSiteForm(request.POST, user=request.user)
