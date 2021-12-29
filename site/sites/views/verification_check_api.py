@@ -1,4 +1,5 @@
 from django.http import HttpRequest, JsonResponse
+from django.conf import settings
 from ..decorators import required_site_access
 from .. import models as site_models
 
@@ -20,7 +21,9 @@ def verification_check_api(
     if not site_models.VerificationCheckLog.can_run_check(site):
         return JsonResponse({
             'success': False,
-            'message': 'A verification check was done recently. Please wait a while longer before trying again.'  # noqa E501
+            'message': 'A verification check was done recently. Please wait '
+            f'{settings.SITES_VERIFY_TIMEOUT_SECS} between '
+            'requests.'
         })
 
     site_models.VerificationCheckLog.add_log(site, request.user)
@@ -28,7 +31,7 @@ def verification_check_api(
     return JsonResponse({
         'success': True,
         'data': {
-            'verified': site.verified,
+            'verified': site.verify(),
             'txt_record': site.txt_record
         }
     })

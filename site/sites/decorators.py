@@ -20,7 +20,6 @@ def required_site_access(func):
             request (HttpRequest): The request object.
             id (int): The site ID.
             slug (str): The site slug.
-            
         """
         site = site_models.Site.for_id_slug(id, slug)
         if site is None:

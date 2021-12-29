@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.text import slugify
+from django.conf import settings
 from dns import resolver
 
 
@@ -25,12 +26,14 @@ def gen_txt_record(domain: str, created_on: datetime) -> str:
 # Models
 class Site(models.Model):
     """Represents a registered site."""
+
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100)
     domain = models.CharField(max_length=100)
     txt_record = models.CharField(max_length=100, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_benchmarked = models.DateTimeField(blank=True, null=True)
+    last_verified = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         ordering = ['created_on', 'name']
@@ -69,12 +72,30 @@ class Site(models.Model):
         return reverse('sites:site', args=[self.id, self.slug])
 
     @property
-    def verified(self):
-        """Check that the txt record exists in the DNS."""
+    def verified(self) -> bool:
+        """Check if the site is verified respecting the validation expiration
+        time.
+        """
+        if self.last_verified is None:
+            return False
+        return self.last_verified > timezone.now() - timedelta(
+            hours=settings.SITES_VERIFY_DURATION_SECS
+        )
+
+    def verify(self, force: bool = False) -> bool:
+        """Verify a site.
+        Args:
+            force (bool): Force verification.
+        Returns:
+            bool: Whether the verification was successful.
+        """
+        if not force and self.verified:
+            return True
         try:
             answers = resolver.query(self.domain, 'TXT')
             for record in answers:
                 if record.strings[0] == self.txt_record.encode():
+                    self.last_verified = timezone.now()
                     return True
         except resolver.NoAnswer:
             pass
@@ -210,7 +231,10 @@ class VerificationCheckLog(models.Model):
 
         return not cls.objects.filter(
             site=site,
-            created_on__gte=timezone.now() - timedelta(seconds=30)
+            created_on__gte=(
+                timezone.now()
+                - timedelta(seconds=settings.SITES_VERIFY_TIMEOUT_SECS)
+            )
         ).exists()
 
     @classmethod
