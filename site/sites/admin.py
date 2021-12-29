@@ -9,7 +9,8 @@ class SiteAccessInline(admin.TabularInline):
 
 @admin.register(models.Site)
 class SiteAdmin(admin.ModelAdmin):
-    list_display = ('name', 'domain', 'txt_record', 'created_on')
+    list_display = ('name', 'domain', 'txt_record', 'last_benchmarked',
+                    'created_on')
     list_filter = ('created_on',)
     search_fields = ('name', 'domain')
     ordering = ('-created_on', 'name')

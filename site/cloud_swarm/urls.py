@@ -11,6 +11,7 @@ admin.site.site_title = 'Web Horde Admin'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('pages.urls')),
+    path('sites/', include(('sites.urls', 'sites'), namespace='sites')),
 ]
 
 # Static Files

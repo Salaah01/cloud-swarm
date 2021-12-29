@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main>
+  <h1 class="heading-1">Sites Dashboard</h1>
+
+  <a href="#" class="btn btn--primary">Add Site</a>
+
+  <table class="table sites-table">
+    <thead class="table-dark">
+      <tr>
+        <th scope="col">Site</th>
+        <th scope="col">Last Benchmarked</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for site in sites %}
+        <tr>
+          <td>
+            <a href="{{ site.absolute_url }}">
+              <span>{{ site.name }}</span>
+              <span>{{ site.domain }}</span>
+            </a>
+          </td>
+          <td>
+            {% if site.last_benchmarked %}
+              {{ site.last_benchmarked }}
+            {% else %}
+              Never
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</main>
+{% endblock %}

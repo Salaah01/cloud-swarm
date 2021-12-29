@@ -1,0 +1,11 @@
+.navbar {
+  &__logo {
+    svg {
+      height: 3rem;
+      width: 3rem;
+      circle {
+        fill: $colour-primary !important;
+      }
+    }
+  }
+}
