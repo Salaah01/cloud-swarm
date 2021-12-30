@@ -4,19 +4,19 @@ from django.views import View
 from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from .. import forms
 
 
+@method_decorator(login_required, name='dispatch')
 class NewSite(View):
     """View for registering a new site."""
 
-    @login_required
     def get(self, request: HttpRequest) -> HttpResponse:
         """GET request handler."""
         form = forms.NewSiteForm()
         return render(request, 'sites/new_site.html', {'form': form})
 
-    @login_required
     def post(self, request: HttpRequest) -> HttpResponse:
         """POST request handler."""
         form = forms.NewSiteForm(request.POST, user=request.user)

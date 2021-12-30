@@ -72,6 +72,11 @@ class Site(models.Model):
         return reverse('sites:site', args=[self.id, self.slug])
 
     @property
+    def previously_verified(self) -> bool:
+        """Whether the site was verified previously."""
+        return self.last_verified is not None
+
+    @property
     def verified(self) -> bool:
         """Check if the site is verified respecting the validation expiration
         time.
@@ -96,6 +101,7 @@ class Site(models.Model):
             for record in answers:
                 if record.strings[0] == self.txt_record.encode():
                     self.last_verified = timezone.now()
+                    self.save()
                     return True
         except resolver.NoAnswer:
             pass

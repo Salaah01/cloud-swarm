@@ -1,5 +1,43 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
   <h1 class="heading-1">{{ site.name }}</h1>
+
+  {% if site.verified %}
+    <p class="verified">
+      <i class="fa fa-check-circle"></i>
+      Verified
+    </p>
+  {% else %}
+    <p class="unverified">
+      <i class="fa fa-times-circle"></i>
+      Unverified
+    </p>
+    <p>
+      This site is currently unverified and and so we are unable to run
+      benchmarks.
+    </p>
+    <p>
+      In order to verify the site, please ensure that the following TXT record
+      is set in your DNS zone:
+    </p>
+    <p>For a step-by-step guide, please <a href="#">click here</a>.</p>
+    <pre>{{ site.txt_record }}</pre>
+    <p>Once added, please press the verify button.</p>
+    <input
+      type="button"
+      value="Verify"
+      id="verify-btn"
+      class="btn btn--primary"
+      data-id="{{ site.id }}"
+      data-slug="{{ site.slug }}"
+    />
+  {% endif %}
+  
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'sites/js/site.min.js' %}"></script>
 {% endblock %}

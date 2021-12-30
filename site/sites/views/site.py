@@ -10,6 +10,9 @@ def site(
     site: site_models.Site,
     site_access: site_models.SiteAccess
 ) -> HttpResponse:
+
+    if site.previously_verified and not site.verified:
+        site.verify()
     return render(request, 'sites/site.html', {
         'site': site,
         'site_access': site_access}
