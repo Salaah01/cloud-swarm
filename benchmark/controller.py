@@ -70,7 +70,7 @@ class MasterNode:
             instance_type (str): Instance type to create
             key_name (str): Key name to use
         """
-        self.url = url
+        self.url = url.rstrip('/') + '/'
         self.num_nodes = num_nodes
         self.requests_per_node = requests_per_node
         self.instance_type = instance_type
@@ -205,8 +205,22 @@ class MasterNode:
         }
 
 
-if __name__ == '__main__':
-    with MasterNode(num_nodes=2, requests_per_node=10) as master:
+def run_benchmark(url: str, num_nodes: int, requests_per_node: int) -> None:
+    """Runs the benchmark.
+    Args:
+        url (str): URL of the site to benchmark
+        num_nodes (int): Number of nodes to create
+        requests_per_node (int): Number of requests to run per node
+    """
+    with MasterNode(
+        url,
+        num_nodes,
+        requests_per_node
+    ) as master:
         master.execute_tasks()
         results = master.calculate_results()
-        print(results)
+        print(json.dumps(results, indent=2))
+
+
+if __name__ == '__main__':
+    run_benchmark('https://iamsalaah.com', 2, 2)

@@ -1,5 +1,5 @@
 from django.db import models
-from . import producers as benchmark_producers
+from . import producer as benchmark_producer
 from . import models as benchmark_models
 
 
@@ -13,7 +13,7 @@ def on_new_benchmark(
     Args:
         instance: The benchmark to publish.
     """
-    benchmark_producers.new_benchmark(instance)
+    benchmark_producer.new_benchmark(instance)
 
 
 benchmark_models.NEW_BENCHMARK.connect(

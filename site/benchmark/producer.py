@@ -23,7 +23,7 @@ def new_benchmark(benchmark: benchmark_models.Benchmark) -> None:
         benchmark: The benchmark to publish.
     """
     publish_message(
-        'benchmark_new',
+        'benchmark.new',
         {
             'id': benchmark.id,
             'domain': benchmark.site.domain,
