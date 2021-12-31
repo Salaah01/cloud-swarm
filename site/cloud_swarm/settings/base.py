@@ -106,6 +106,12 @@ CACHES = {
     },
 }
 
+EVENT_BUS = {
+    'host': os.getenv('EVENT_BUS_HOST'),
+    'port': os.getenv('EVENT_BUS_PORT'),
+    'db': os.getenv('EVENT_BUS_DB'),
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 

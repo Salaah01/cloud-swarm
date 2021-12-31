@@ -3,39 +3,57 @@
 {% load static %}
 
 {% block content %}
-  <h1 class="heading-1">{{ site.name }}</h1>
 
-  {% if site.verified %}
-    <p class="verified">
-      <i class="fa fa-check-circle"></i>
-      Verified
-    </p>
-  {% else %}
-    <p class="unverified">
-      <i class="fa fa-times-circle"></i>
-      Unverified
-    </p>
-    <p>
-      This site is currently unverified and and so we are unable to run
-      benchmarks.
-    </p>
-    <p>
-      In order to verify the site, please ensure that the following TXT record
-      is set in your DNS zone:
-    </p>
-    <p>For a step-by-step guide, please <a href="#">click here</a>.</p>
-    <pre>{{ site.txt_record }}</pre>
-    <p>Once added, please press the verify button.</p>
-    <input
-      type="button"
-      value="Verify"
-      id="verify-btn"
-      class="btn btn--primary"
-      data-id="{{ site.id }}"
-      data-slug="{{ site.slug }}"
-    />
-  {% endif %}
-  
+  <nav
+    class="container"
+    style="--bs-breadcrumb-divider: '>';"
+    aria-label="breadcrumb"
+  >
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{% url 'sites:dashboard' %}">Sites</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {{ site.name }}
+      </li>
+    </ol>
+  </nav>
+
+  <main class="container">
+    <h1 class="heading-1 mb-0">{{ site.name }}</h1>
+    <p class="heading-2 mb-0">{{ site.domain }}</p>
+
+    {% if site.verified %}
+      <p class="text-success">
+        <i class="fa fa-check-circle"></i>
+        Verification Status: Verified
+      </p>
+    {% else %}
+      <p class="text-danger">
+        <i class="fa fa-times-circle"></i>
+        Verification Status: Unverified
+      </p>
+      <p>
+        This site is currently unverified and and so we are unable to run
+        benchmarks.
+      </p>
+      <p>
+        In order to verify the site, please ensure that the following TXT record
+        is set in your DNS zone:
+      </p>
+      <pre><code>{{ site.txt_record }}</code></pre>
+      <p>For a step-by-step guide, please <a href="#">click here</a>.</p>
+      <p>Once added, please press the verify button.</p>
+      <input
+        type="button"
+        value="Verify"
+        id="verify-btn"
+        class="btn btn--primary"
+        data-id="{{ site.id }}"
+        data-slug="{{ site.slug }}"
+      />
+    {% endif %}
+  </main>
 {% endblock %}
 
 {% block scripts %}

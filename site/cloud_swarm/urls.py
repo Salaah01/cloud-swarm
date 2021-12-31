@@ -12,6 +12,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('pages.urls')),
     path('sites/', include(('sites.urls', 'sites'), namespace='sites')),
+    path(
+        'benchmark/',
+        include(('benchmark.urls', 'benchmark'), namespace='benchmark')
+    ),
 ]
 
 # Static Files
