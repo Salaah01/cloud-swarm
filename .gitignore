@@ -268,3 +268,6 @@ icons-original.css
 (js|css).LICENSE.txt*
 *Zone.Identifier
 results
+data
+.aws
+static_files

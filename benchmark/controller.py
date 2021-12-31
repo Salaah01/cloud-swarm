@@ -38,6 +38,7 @@ class SlaveNode:
             url (str): URL to benchmark
         """
         subprocess.call([
+            'bash',
             os.path.join(BASE_DIR, 'benchmark_setup.sh'),
             self.host,
             ts.strftime('%m%d%H%M'),
@@ -48,6 +49,7 @@ class SlaveNode:
     def benchmark_results(self):
         """Returns the results of the benchmark."""
         subprocess.call([
+            'bash',
             os.path.join(BASE_DIR, 'benchmark_results.sh'),
             self.host
         ])

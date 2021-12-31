@@ -36,3 +36,4 @@ INTERNAL_IPS = [
 # Enabling template debug option for coverage tests.
 TEMPLATES[0]['OPTIONS']['debug'] = DEBUG  # noqa: F405
 
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'https://localhost']

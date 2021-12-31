@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  # benchmark:
+    # volumes:
+    #   - ./benchmark/:/app/
+
+  nginx:
+    build: ./nginx_dev/.
+    volumes:
+      - ./nginx_dev:/etc/nginx/conf.d/
+      - ./static_files/:/static_files/
+
+  web:
+    build:
+      dockerfile: dev.Dockerfile      
+    volumes:
+      - ./site/:/app/
+      - ./static_files/:/static_files/

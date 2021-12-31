@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  benchmark:
+    build: ./benchmark/.
+    restart: always
+    depends_on:
+      - redis
+    command: python consumer.py
+    environment:
+      EVENT_BUS_HOST: redis
+      EVENT_BUS_PORT: 6379
+      EVENT_BUS_DB: 0
+    # command: bash -c "echo LSSSINNGGG && ls -lrt ~/.aws/ && tail -f /dev/null && python consumer.py"
+
+  postgres:
+    # build: ./postgres/.
+    image: postgres:14.1
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+    environment:
+      # - POSTGRES_DB_FILE=/run/secrets/.postgres_db
+      # - POSTGRES_USER_FILE=/run/secrets/.postgres_user
+      # - POSTGRES_PASSWORD_FILE=/run/secrets/.postgres_pass
+      - POSTGRES_DB=cloud_swarm
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
+
+  web:
+    build:
+      context: ./site
+    restart: always
+    depends_on:
+      - redis
+      - postgres
+    env_file:
+      - ./site/.env
+    ports:
+      - 8001:8000
+    command: >
+      bash -c "rm -rf static
+      && python manage.py migrate
+      && python manage.py collectstatic --noinput
+      && daphne -b 0.0.0.0 -p 8000 cloud_swarm.asgi:application"
+
+  redis:
+    image: redis:6.2.6
+
+  nginx:
+    ports:
+      - 8080:80
+      - 443:443
+    depends_on:
+      - web
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s
+      reload; done & nginx -g "daemon off;"'''

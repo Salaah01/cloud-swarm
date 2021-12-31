@@ -81,12 +81,13 @@ def _setup_instance(instance) -> None:
 
     # Run the setup script
     exit_code = subprocess.call([
+        'bash',
         SERVER_SETUP_SCRIPT,
         instance.public_ip_address
     ])
     if exit_code != 0:
         raise Exception(
-            f'\033[91m{self.instance.id} setup failed with exit code {exit_code}\033[0m'
+            f'\033[91m{instance.id} setup failed with exit code {exit_code}\033[0m'  # noqa: E501
         )
 
     print(f'\033[92mFinished setting up {instance.id}\033[0m')

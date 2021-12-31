@@ -180,3 +180,16 @@ RECAPTCHA_SECRET_KEY = os.getenv('RECAPTCHA_SECRET_KEY')
 # Sites App Settings
 SITES_VERIFY_DURATION_SECS = 60 * 60  # 1 hour
 SITES_VERIFY_TIMEOUT_SECS = 60
+
+# Channel Layer
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(
+                os.getenv('REDIS_HOST', 'localhost'),
+                int(os.getenv('REDIS_PORT', 6379)),
+            )],
+        }
+    }
+}
