@@ -4,8 +4,6 @@ import typing as _t
 import os
 import subprocess
 import threading
-from queue import Queue
-import time
 import boto3
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

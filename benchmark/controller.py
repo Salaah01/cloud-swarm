@@ -4,7 +4,6 @@ needed to benchmark a site.
 
 import typing as _t
 import os
-import logging
 import subprocess
 import threading
 import time
@@ -12,8 +11,10 @@ import json
 from datetime import datetime, timedelta
 try:
     from . import ec2
+    from . import site_api
 except ImportError:
     import ec2
+    import site_api
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -60,18 +61,26 @@ class MasterNode:
     be responsible for running the benchmark.
     """
 
-    def __init__(self, url: str, num_nodes: int = 1,
+    def __init__(self, benchmark_id: int, url: str, num_nodes: int = 1,
                  requests_per_node: int = 1,
                  instance_type: _t.Optional[str] = None,
                  key_name: _t.Optional[str] = None):
         """Creates a master node.
         Args:
+            benchmark_id (int): ID of the benchmark
             url (str): URL of the site to benchmark
             num_nodes (int): Number of nodes to create
             requests_per_node (int): Number of requests to run per node
             instance_type (str): Instance type to create
             key_name (str): Key name to use
         """
+
+        # Log the benchmark start time.
+
+        self._current_step = 0
+        self.benchmark_status_next_step()
+
+        self.benchmark_id = benchmark_id
         self.url = url.rstrip('/') + '/'
         self.num_nodes = num_nodes
         self.requests_per_node = requests_per_node
@@ -79,6 +88,32 @@ class MasterNode:
         self.key_name = key_name
 
         self.nodes: _t.List[SlaveNode] = []
+
+    @property
+    def current_step(self):
+        """Returns the current step in terms of the site's benchmark status
+        choices.
+        """
+        return self._current_step
+
+    @current_step.setter
+    def current_step(self, value: int):
+        """Sets the current step."""
+        self._current_step = value
+
+    def benchmark_status_next_step(self) -> None:
+        """Sends the next step in the benchmark status.
+
+        Steps:
+            1: Provisioning servers
+            2: Setting up servers
+            3: Scheduling benchmarks
+            5: Collecting results
+        """
+        steps = [1, 2, 3, 5]
+
+        self.current_step = steps.index(self.current_step) + 1
+        site_api.send_progress(self.benchmark_id, self.current_step)
 
     def __enter__(self):
         """Enters the context manager."""
@@ -103,6 +138,7 @@ class MasterNode:
 
     def spawn_nodes(self) -> None:
         """Spawns a collection of nodes."""
+        self.benchmark_status_next_step()
         instances = ec2.create_instances(num_instances=self.num_nodes)
         for instance in instances:
             self.nodes.append(SlaveNode(instance))
@@ -147,6 +183,7 @@ class MasterNode:
 
     def _execute_task_schedule_benchmark(self, node: SlaveNode) -> None:
         """Executes the task to schedule the benchmark."""
+        self.benchmark_status_next_step()
         node.schedule_benchmark(
             self.benchmark_start_ts(),
             self.requests_per_node,
@@ -160,12 +197,13 @@ class MasterNode:
         Returns:
             None
         """
+        self.benchmark_status_next_step()
         # Check that the benchmark has finished (base this on the scheduled
         # start time).
         if datetime.now() < self.benchmark_start_ts():
             sleep_time = self.benchmark_start_ts() - datetime.now()
             print(
-                f'[{datetime.now().strftime("%H:%M")}] Results not ready, sleeping for {sleep_time}'
+                f'[{datetime.now().strftime("%H:%M")}] Results not ready, sleeping for {sleep_time}'  # noqa E501
             )
             time.sleep(sleep_time.total_seconds())
         node.benchmark_results()
@@ -207,14 +245,21 @@ class MasterNode:
         }
 
 
-def run_benchmark(url: str, num_nodes: int, requests_per_node: int) -> None:
+def run_benchmark(
+    benchmark_id: int,
+    url: str,
+    num_nodes: int,
+    requests_per_node: int
+) -> None:
     """Runs the benchmark.
     Args:
+        benchmark_id (int): ID of the benchmark
         url (str): URL of the site to benchmark
         num_nodes (int): Number of nodes to create
         requests_per_node (int): Number of requests to run per node
     """
     with MasterNode(
+        benchmark_id,
         url,
         num_nodes,
         requests_per_node
@@ -225,4 +270,4 @@ def run_benchmark(url: str, num_nodes: int, requests_per_node: int) -> None:
 
 
 if __name__ == '__main__':
-    run_benchmark('https://iamsalaah.com', 2, 2)
+    run_benchmark(1, 'https://iamsalaah.com', 2, 2)

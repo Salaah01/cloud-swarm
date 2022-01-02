@@ -15,5 +15,5 @@ def site(
         site.verify()
     return render(request, 'sites/site.html', {
         'site': site,
-        'site_access': site_access}
-    )
+        'site_access': site_access
+    })

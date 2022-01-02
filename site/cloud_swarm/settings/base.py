@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'accounts',
     'sites',
     'benchmark',
+    'internal_api',
 ]
 
 
@@ -192,4 +193,11 @@ CHANNEL_LAYERS = {
             )],
         }
     }
+}
+
+# JWT settings for internal API
+JWT = {
+    'JWT_SECRET_KEY': os.getenv('JWT_SECRET_KEY'),
+    'JWT_ALGORITHM': 'HS256',
+    'JWT_EXPIRATION_SECONDS': 3600,
 }

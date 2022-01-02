@@ -16,6 +16,13 @@ urlpatterns = [
         'benchmark/',
         include(('benchmark.urls', 'benchmark'), namespace='benchmark')
     ),
+    path(
+        'internal-api/',
+        include(
+            ('internal_api.urls', 'internal_api'),
+            namespace='internal_api'
+        )
+    ),
 ]
 
 # Static Files

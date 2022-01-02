@@ -23,36 +23,71 @@
     <h1 class="heading-1 mb-0">{{ site.name }}</h1>
     <p class="heading-2 mb-0">{{ site.domain }}</p>
 
-    {% if site.verified %}
-      <p class="text-success">
-        <i class="fa fa-check-circle"></i>
-        Verification Status: Verified
-      </p>
-    {% else %}
-      <p class="text-danger">
-        <i class="fa fa-times-circle"></i>
-        Verification Status: Unverified
-      </p>
-      <p>
-        This site is currently unverified and and so we are unable to run
-        benchmarks.
-      </p>
-      <p>
-        In order to verify the site, please ensure that the following TXT record
-        is set in your DNS zone:
-      </p>
-      <pre><code>{{ site.txt_record }}</code></pre>
-      <p>For a step-by-step guide, please <a href="#">click here</a>.</p>
-      <p>Once added, please press the verify button.</p>
-      <input
-        type="button"
-        value="Verify"
-        id="verify-btn"
-        class="btn btn--primary"
-        data-id="{{ site.id }}"
-        data-slug="{{ site.slug }}"
-      />
-    {% endif %}
+    <section>
+      {% if site.verified %}
+        <p class="text-success">
+          <i class="fa fa-check-circle"></i>
+          Verification Status: Verified
+        </p>
+      {% else %}
+        <p class="text-danger">
+          <i class="fa fa-times-circle"></i>
+          Verification Status: Unverified
+        </p>
+        <p>
+          This site is currently unverified and and so we are unable to run
+          benchmarks.
+        </p>
+        <p>
+          In order to verify the site, please ensure that the following TXT record
+          is set in your DNS zone:
+        </p>
+        <pre><code>{{ site.txt_record }}</code></pre>
+        <p>For a step-by-step guide, please <a href="#">click here</a>.</p>
+        <p>Once added, please press the verify button.</p>
+        <input
+          type="button"
+          value="Verify"
+          id="verify-btn"
+          class="btn btn--primary"
+          data-id="{{ site.id }}"
+          data-slug="{{ site.slug }}"
+        />
+      {% endif %}
+    </section>
+    <section>
+      <h2 class="heading">Benchmarks</h2>
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">First</th>
+            <th scope="col">Last</th>
+            <th scope="col">Handle</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+          </tr>
+          <tr>
+            <th scope="row">2</th>
+            <td>Jacob</td>
+            <td>Thornton</td>
+            <td>@fat</td>
+          </tr>
+          <tr>
+            <th scope="row">3</th>
+            <td>Larry</td>
+            <td>the Bird</td>
+            <td>@twitter</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
   </main>
 {% endblock %}
 

@@ -1,2 +1,4 @@
 boto3==1.20.26
 redis==4.1.0
+requests==2.26.0
+pyjwt==2.3.0

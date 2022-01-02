@@ -4,9 +4,10 @@ services:
   benchmark:
     build: ./benchmark/.
     restart: always
+    env_file: ./benchmark/.env
     depends_on:
       - redis
-    command: python consumer.py
+    command: python consumers.py
     environment:
       EVENT_BUS_HOST: redis
       EVENT_BUS_PORT: 6379

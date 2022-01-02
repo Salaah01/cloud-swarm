@@ -5,11 +5,16 @@ from sites import models as site_models
 
 
 NEW_BENCHMARK = dispatch.Signal()
+UPDATED_BENCHMARK_PROGRESS = dispatch.Signal()
 
 
 class Benchmark(models.Model):
     """Represents a benchmark."""
-    site = models.ForeignKey(site_models.Site, on_delete=models.CASCADE)
+    site = models.ForeignKey(
+        site_models.Site,
+        on_delete=models.CASCADE,
+        related_name='benchmarks'
+    )
     requested_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
     num_servers = models.PositiveIntegerField(
@@ -91,3 +96,51 @@ class Benchmark(models.Model):
     def not_completed(cls):
         """Return all sites that have not been completed."""
         return cls.objects.filter(completed_on__isnull=True)
+
+
+class BenchmarkProgress(models.Model):
+    """Represents the progress of a benchmark."""
+
+    class StatusChoices(models.IntegerChoices):
+        """Represents the status of a benchmark."""
+        PENDING = 0, 'Pending'
+        PROVISIONING = 1, 'Provisioning servers'
+        SERVER_SETUP = 2, 'Setting up servers'
+        SCHEDULING = 3, 'Scheduling benchmark'
+        RUNNING = 4, 'Running benchmark'
+        RESULTS = 5, 'Collecting results'
+        COMPLETED = 6, 'Completed'
+
+    LOGGABLE_STATUSES = (
+        (StatusChoices.SCHEDULING, 'scheduled_on'),
+        (StatusChoices.COMPLETED, 'completed_on'),
+    )
+
+    benchmark = models.OneToOneField(
+        Benchmark,
+        on_delete=models.CASCADE,
+        related_name='progress'
+    )
+    status = models.PositiveIntegerField(
+        choices=StatusChoices.choices,
+        default=StatusChoices.PENDING
+    )
+
+    class Meta:
+        verbose_name_plural = 'Benchmark Progress'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._status = self.status
+
+    def __str__(self):
+        return f'{self.get_status_display()} for {self.benchmark}'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self._status != self.status:
+            self._status = self.status
+            UPDATED_BENCHMARK_PROGRESS.send(
+                sender=self.__class__,
+                instance=self
+            )

@@ -29,6 +29,7 @@ def new_benchmark_consumer():
             t = threading.Thread(
                 target=controller.run_benchmark,
                 kwargs={
+                    'benchmark_id': data['benchmark_id'],
                     'url': data['domain'],
                     'num_nodes': data['num_servers'],
                     'requests_per_node': data['num_requests']
