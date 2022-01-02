@@ -78,9 +78,9 @@ class MasterNode:
         # Log the benchmark start time.
 
         self._current_step = 0
+        self.benchmark_id = benchmark_id
         self.benchmark_status_next_step()
 
-        self.benchmark_id = benchmark_id
         self.url = url.rstrip('/') + '/'
         self.num_nodes = num_nodes
         self.requests_per_node = requests_per_node
@@ -105,14 +105,14 @@ class MasterNode:
         """Sends the next step in the benchmark status.
 
         Steps:
+            0: Initial state
             1: Provisioning servers
             2: Setting up servers
             3: Scheduling benchmarks
-            5: Collecting results
         """
-        steps = [1, 2, 3, 5]
+        steps = [0, 1, 2, 3, 5]
 
-        self.current_step = steps.index(self.current_step) + 1
+        self.current_step = steps[steps.index(self.current_step) + 1]
         site_api.send_progress(self.benchmark_id, self.current_step)
 
     def __enter__(self):
@@ -160,6 +160,7 @@ class MasterNode:
 
     def execute_tasks(self) -> None:
         """Executes a set of tasks on all node."""
+        self.benchmark_status_next_step()
         threads = []
         for node in self.nodes:
             t = threading.Thread(
@@ -183,7 +184,6 @@ class MasterNode:
 
     def _execute_task_schedule_benchmark(self, node: SlaveNode) -> None:
         """Executes the task to schedule the benchmark."""
-        self.benchmark_status_next_step()
         node.schedule_benchmark(
             self.benchmark_start_ts(),
             self.requests_per_node,
@@ -197,7 +197,6 @@ class MasterNode:
         Returns:
             None
         """
-        self.benchmark_status_next_step()
         # Check that the benchmark has finished (base this on the scheduled
         # start time).
         if datetime.now() < self.benchmark_start_ts():
@@ -215,6 +214,8 @@ class MasterNode:
         Returns:
             Dict[str, Any]: Result of the benchmark
         """
+
+        self.benchmark_status_next_step()
         complete_requests = 0
         failed_requests = 0
 
@@ -232,17 +233,22 @@ class MasterNode:
             results.append(result)
 
         # Blend the results calculating the min, max and average.
-        min_time = min(result['min'] for result in results)
-        max_time = max(result['max'] for result in results)
-        mean_time = sum(result['mean'] for result in results) / len(results)
+        min_time = min(result['min_time'] for result in results)
+        max_time = max(result['max_time'] for result in results)
+        mean_time = sum(
+            result['mean_time'] for result in results
+        ) / len(results)
 
-        return {
-            'min': min_time,
-            'max': max_time,
-            'mean': mean_time,
-            'complete_requests': complete_requests,
+        results = {
+            'min_time': min_time,
+            'max_time': max_time,
+            'mean_time': mean_time,
+            'completed_requests': complete_requests,
             'failed_requests': failed_requests
         }
+
+        site_api.send_results(benchmark_id=self.benchmark_id, **results)
+        return results
 
 
 def run_benchmark(

@@ -60,31 +60,53 @@
       <table class="table">
         <thead class="thead-dark">
           <tr>
-            <th scope="col">#</th>
-            <th scope="col">First</th>
-            <th scope="col">Last</th>
-            <th scope="col">Handle</th>
+            <th scope="col">Created On</th>
+            <th scope="col">Scheduled For</th>
+            <th scope="col">Status</th>
+            <th scope="col">Servers</th>
+            <th scope="col">Requests per Server</th>
+            <th scope="col">Min Time (ms)</th>
+            <th scope="col">Mean Time (ms)</th>
+            <th scope="col">Max Time (ms)</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-          </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td>Larry</td>
-            <td>the Bird</td>
-            <td>@twitter</td>
-          </tr>
+          {% for benchmark in site.benchmarks.all %}
+            <tr>
+              <td>{{ benchmark.created_on }}</td>
+              <td>
+                {% if benchmark.scheduled_on %}
+                  {{ benchmark.scheduled_on }}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+              <td>{{ benchmark.progress.get_status_display }}</td>
+              <td>{{ benchmark.num_servers }}</td>
+              <td>{{ benchmark.num_requests }}</td>
+              <td>
+                {% if benchmark.min_time %}
+                  {{ benchmark.min_time }}
+                {% else %}
+                  -
+                {% endif %}
+                </td>
+              <td>
+                {% if benchmark.mean_time %}
+                  {{ benchmark.mean_time }}
+                {% else %}
+                  -
+                {% endif %}
+                </td>
+              <td>
+                {% if benchmark.max_time %}
+                  {{ benchmark.max_time }}
+                {% else %}
+                  -
+                {% endif %}
+                </td>
+            </tr>
+          {% endfor %}
         </tbody>
       </table>
     </section>

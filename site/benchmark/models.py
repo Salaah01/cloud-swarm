@@ -1,3 +1,5 @@
+import typing as _t
+from datetime import timedelta
 from django import dispatch
 from django.db import models
 from django.contrib.auth.models import User
@@ -97,6 +99,22 @@ class Benchmark(models.Model):
         """Return all sites that have not been completed."""
         return cls.objects.filter(completed_on__isnull=True)
 
+    @classmethod
+    def avg_completion_time(cls) -> _t.Union[timedelta, None]:
+        """Return the average completion time for all benchmarks."""
+        records = cls.objects.filter(
+            started_on__isnull=False,
+            completed_on__isnull=False
+        )
+        if records.count() == 0:
+            return None
+        total_seconds = sum(
+            (record.completed_on - record.started_on).total_seconds()
+            for record in records
+        )
+        records_count = records.count()
+        return timedelta(seconds=total_seconds / records_count)
+
 
 class BenchmarkProgress(models.Model):
     """Represents the progress of a benchmark."""
@@ -144,3 +162,8 @@ class BenchmarkProgress(models.Model):
                 sender=self.__class__,
                 instance=self
             )
+
+    def set_completed(self) -> None:
+        """Set the benchmark progress to completed."""
+        self.status = self.StatusChoices.COMPLETED
+        self.save()
