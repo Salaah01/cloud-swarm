@@ -12,9 +12,11 @@ from datetime import datetime, timedelta
 try:
     from . import ec2
     from . import site_api
+    from . import job_queue
 except ImportError:
     import ec2
     import site_api
+    import job_queue
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -146,6 +148,10 @@ class MasterNode:
     def terminate_nodes(self) -> None:
         """Terminates all the nodes."""
         ec2.terminate_instances(self.instances())
+        job_queue.connection.publish(
+            'benchmark_done',
+            json.dumps({'num_servers': len(self)})
+        )
         self.nodes = []
 
     def benchmark_start_ts(self) -> datetime:
