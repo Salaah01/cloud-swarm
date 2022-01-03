@@ -77,10 +77,10 @@
         <tbody>
           {% for benchmark in site.benchmarks.all %}
             <tr data-benchmark-id="{{ benchmark.id }}">
-              <td>{{ benchmark.created_on }}</td>
-              <td>
+              <td>{{ benchmark.created_on|date:"d-m-Y H:m" }}</td>
+              <td data-type="scheduled-on">
                 {% if benchmark.scheduled_on %}
-                  {{ benchmark.scheduled_on }}
+                  {{ benchmark.scheduled_on|date:"d-m-Y H:m" }}
                 {% else %}
                   -
                 {% endif %}

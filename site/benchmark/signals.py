@@ -50,6 +50,7 @@ def on_benchmark_progress_update(
         instance.benchmark.site_id,
         instance.benchmark_id,
         instance.get_status_display(),
+        instance.benchmark.scheduled_on,
     )
 
 

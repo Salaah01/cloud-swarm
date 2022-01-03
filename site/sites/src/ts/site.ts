@@ -37,9 +37,25 @@ const benchmarkProgress = () => {
 
   ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    const statusInnerContainer = document.querySelector(
-      `[data-benchmark-id="${data.benchmark_id}"] .benchmark-table__inner-container
-    `) as HTMLElement;
+    console.log(data);
+
+    const row = document.querySelector(
+      `[data-benchmark-id="${data.benchmark_id}"]`
+    );
+    console.log(row);
+    if (!row) return;
+
+    // Updated scheduled on
+    if (data.scheduled_on) {
+      row.querySelector(
+        '[data-type="scheduled-on"]'
+      )!.textContent = data.scheduled_on;
+    }
+
+    // Update status
+    const statusInnerContainer = row.querySelector(
+      '[data-type="status"] .benchmark-table__inner-container'
+    ) as HTMLElement;
     statusInnerContainer.querySelector('span')!.textContent = data.status;
     if (data.status === 'Completed') {
       statusInnerContainer.querySelector('.spinner')?.remove();

@@ -1,3 +1,5 @@
+import typing as _t
+import datetime
 from asgiref.sync import sync_to_async, async_to_sync
 from django.contrib.auth.models import User
 from channels.generic.websocket import (
@@ -50,10 +52,11 @@ class BenchmarkProgressConsumer(AsyncJsonWebsocketConsumer):
         cls,
         site_id: int,
         benchmark_id: int,
-        new_status: str
+        new_status: str,
+        scheduled_on: _t.Optional[datetime.datetime] = None,
     ) -> None:
         """Send an update to the websocket.
-        
+
         Args:
             site_id (int): The site id.
             benchmark_id (int): The benchmark id.
@@ -68,6 +71,12 @@ class BenchmarkProgressConsumer(AsyncJsonWebsocketConsumer):
                 'message': {
                     'benchmark_id': benchmark_id,
                     'status': new_status,
+                    'scheduled_on': (
+                        scheduled_on
+                        and scheduled_on.strftime('%d-%m-%Y %H:%M')
+                        or None
+                    )
+
                 }
             },
         )
@@ -86,9 +95,8 @@ class BenchmarkProgressConsumer(AsyncJsonWebsocketConsumer):
     async def benchmark_progress_update(self, event):
         """Handle an update from the benchmark."""
         message = event['message']
-        benchmark_id = message['benchmark_id']
-        status = message['status']
         await self.send_json({
-            'benchmark_id': benchmark_id,
-            'status': status,
+            'benchmark_id': message['benchmark_id'],
+            'status': message['status'],
+            'scheduled_on': message['scheduled_on'],
         })
