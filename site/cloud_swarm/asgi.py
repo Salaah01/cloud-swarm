@@ -8,10 +8,11 @@ https://docs.djangoproject.com/en/4.0/howto/deployment/asgi/
 """
 
 import os
+from django.core.asgi import get_asgi_application
+from django.urls import path
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
-from django.core.asgi import get_asgi_application
-
+from benchmark import consumers as benchmark_consumers
 
 os.environ.setdefault(
     'DJANGO_SETTINGS_MODULE',
@@ -20,4 +21,12 @@ os.environ.setdefault(
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
+    'websocket': AuthMiddlewareStack(
+        URLRouter([
+            path(
+                'ws/benchmark-progress/site/<int:site_id>/',
+                benchmark_consumers.BenchmarkProgressConsumer.as_asgi()
+            ),
+        ])
+    ),
 })

@@ -3,7 +3,12 @@
 . ~/env
 
 # Run benchmark
-ab -n $NUM_REQUESTS -c $NUM_REQUESTS $BENCHMARK_URL >results.txt
+ab \
+  -H "User-Agent: Cloud Horde Benchmark" \
+  -H "X-Forwarded-For: webhorde.com" \
+  -n $NUM_REQUESTS \
+  -c $NUM_REQUESTS \
+  $BENCHMARK_URL >results.txt
 
 # Extract data from results
 summary=$(grep 'Total:' results.txt)

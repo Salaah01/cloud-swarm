@@ -1,0 +1,15 @@
+@import "../base/animations";
+
+.spinner {
+  border-style: solid;
+  border-color: #f3f3f3;
+  border-top-color: $colour-primary;
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+
+  // This needs to be extended with additional styles.
+  // Below is an example of such styles:
+  // width: 3rem;
+  // height: 3rem;
+  // border-width: .75rem;
+}

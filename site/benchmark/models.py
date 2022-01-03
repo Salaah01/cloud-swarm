@@ -34,13 +34,12 @@ class Benchmark(models.Model):
     min_time = models.PositiveIntegerField(blank=True, null=True)
     max_time = models.PositiveIntegerField(blank=True, null=True)
     mean_time = models.PositiveIntegerField(blank=True, null=True)
-    completed_requests = models.PositiveIntegerField(blank=True, null=True)
-    failed_requests = models.PositiveIntegerField(blank=True, null=True)
+    completed_requests = models.PositiveIntegerField(default=0)
+    failed_requests = models.PositiveIntegerField(default=0)
     sys_error_requests = models.PositiveIntegerField(
+        verbose_name='System Error Requests',
         help_text='The number of requests that failed due to a system error.',
-        blank=True,
-        null=True,
-        verbose_name='System Error Requests'
+        default=0
     )
 
     class Meta:

@@ -5,19 +5,25 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "start": "concurrently \"npm run watch:main\" \"npm run dev:sites:site:ts\"",
+    "start": "concurrently \"npm run watch:main\" \"npm run watch:sites\"",
     "build": "npm-run-all build:*",
     "watch:main": "concurrently \"npm run watch:main:css\"",
     "build:main": "npm-run-all build:main:css",
-    "watch:sites": "concurrently \"npm dev:sites:site:ts\"",
-    "build:sites": "npm-run-all build:sites:site:ts",
+    "watch:sites": "concurrently \"npm run dev:sites:site:ts\" \"npm run watch:sites:site:css\"",
+    "build:sites": "npm-run-all build:sites:site:ts build:sites:site:css",
     "watch:main:css": "node-sass cloud_swarm/src/sass/main.scss cloud_swarm/static/css/main.min.css -w",
     "compile:main:css": "node-sass cloud_swarm/src/sass/main.scss cloud_swarm/static/css/main.min.css --output-style compressed",
     "prefix:main:css": "postcss --use autoprefixer -b \"last 10 versions\" cloud_swarm/static/css/main.min.css -o cloud_swarm/static/css/main.min.css",
     "compress:main:css": "node-sass cloud_swarm/static/css/main.min.css cloud_swarm/static/css/main.min.css --output-style compressed",
     "build:main:css": "npm-run-all compile:main:css prefix:main:css compress:main:css",
     "dev:sites:site:ts": "webpack --config webpack.dev.js ./sites/src/ts/site.ts  --output ./sites/static/sites/js/site.min.js --watch --progress",
-    "build:sites:site:ts": "webpack --config webpack.prod.js ./sites/src/ts/site.ts  --output ./sites/static/sites/js/site.min.js --progress"
+    "build:sites:site:ts": "webpack --config webpack.prod.js ./sites/src/ts/site.ts  --output ./sites/static/sites/js/site.min.js --progress",
+    "watch:sites:site:css": "node-sass sites/src/sass/site.scss sites/static/sites/css/site.min.css -w",
+    "compile:sites:site:css": "node-sass sites/src/sass/site.scss sites/static/sites/css/site.min.css --output-style compressed",
+    "prefix:sites:site:css": "postcss --use autoprefixer -b \"last 10 versions\" sites/static/sites/css/site.min.css -o sites/static/sites/css/site.min.css",
+    "compress:sites:site:css": "node-sass sites/static/sites/css/site.min.css sites/static/sites/css/site.min.css --output-style compressed",
+    "build:sites:site:css": "npm-run-all compile:main:css prefix:main:css compress:main:css"
+    
   },
   "author": "Salaah Amin",
   "devDependencies": {

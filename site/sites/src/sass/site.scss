@@ -1,0 +1,15 @@
+@import "../../../cloud_swarm/src/sass/abstracts/variables";
+@import "../../../cloud_swarm/src/sass/components/spinner";
+
+.benchmark-table {
+  &__inner-container {
+    display: flex;
+    align-items: center;
+  }
+  .spinner {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.75rem;
+    margin-right: .5rem;
+  }
+}

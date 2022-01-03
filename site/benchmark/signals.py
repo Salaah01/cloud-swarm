@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from . import producer as benchmark_producer
 from . import models as benchmark_models
+from . import consumers as benchmark_consumers
 
 
 def on_new_benchmark(
@@ -27,13 +28,15 @@ def on_benchmark_progress_update(
     **kwargs
 ) -> None:
     status_choices = benchmark_models.BenchmarkProgress.StatusChoices
+
+    # Update the benchmark time logs.
     loggable_statues = (
         status_choices.PROVISIONING,
         status_choices.SCHEDULING,
         status_choices.COMPLETED,
     )
     if instance.status not in loggable_statues:
-        return
+        pass
     if instance.status == status_choices.PROVISIONING:
         instance.benchmark.started_on = timezone.now()
     elif instance.status == status_choices.SCHEDULING:
@@ -41,6 +44,13 @@ def on_benchmark_progress_update(
     elif instance.status == status_choices.COMPLETED:
         instance.benchmark.completed_on = timezone.now()
     instance.benchmark.save()
+
+    # Send notification with new status.
+    benchmark_consumers.BenchmarkProgressConsumer.send_status_update(
+        instance.benchmark.site_id,
+        instance.benchmark_id,
+        instance.get_status_display(),
+    )
 
 
 benchmark_models.NEW_BENCHMARK.connect(

@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
 {% load static %}
-
+{% block head %}
+  <link rel='stylesheet' type="text/css" href="{% static 'sites/css/site.min.css' %}">
+{% endblock %}
 {% block content %}
 
   <nav
@@ -57,7 +59,7 @@
     </section>
     <section>
       <h2 class="heading">Benchmarks</h2>
-      <table class="table">
+      <table class="table benchmark-table">
         <thead class="thead-dark">
           <tr>
             <th scope="col">Created On</th>
@@ -68,11 +70,13 @@
             <th scope="col">Min Time (ms)</th>
             <th scope="col">Mean Time (ms)</th>
             <th scope="col">Max Time (ms)</th>
+            <th scope="col">Completed Requests</th>
+            <th scope="col">Failed Requests</th>
           </tr>
         </thead>
         <tbody>
           {% for benchmark in site.benchmarks.all %}
-            <tr>
+            <tr data-benchmark-id="{{ benchmark.id }}">
               <td>{{ benchmark.created_on }}</td>
               <td>
                 {% if benchmark.scheduled_on %}
@@ -81,7 +85,15 @@
                   -
                 {% endif %}
               </td>
-              <td>{{ benchmark.progress.get_status_display }}</td>
+              <td data-type="status">
+                <div class="benchmark-table__inner-container">
+
+                  {% if not benchmark.completed_on %}
+                    <div class="spinner"></div>
+                  {% endif %}
+                  <span>{{ benchmark.progress.get_status_display }}</span>
+                </div>
+              </td>
               <td>{{ benchmark.num_servers }}</td>
               <td>{{ benchmark.num_requests }}</td>
               <td>
@@ -104,7 +116,9 @@
                 {% else %}
                   -
                 {% endif %}
-                </td>
+              </td>
+              <td>{{ benchmark.completed_requests }}</td>
+              <td>{{ benchmark.failed_requests }}</td>
             </tr>
           {% endfor %}
         </tbody>
@@ -114,5 +128,6 @@
 {% endblock %}
 
 {% block scripts %}
+{{ site.id | json_script:"site-id" }}
 <script src="{% static 'sites/js/site.min.js' %}"></script>
 {% endblock %}
