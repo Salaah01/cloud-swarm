@@ -1,4 +1,4 @@
-import BuildURL from '../../../cloud_swarm/src/ts/utils/build_url';
+import { BuildURL } from '../../../core_functions/ts/build_url';
 
 interface WSResponseData {
   benchmark_id: number;

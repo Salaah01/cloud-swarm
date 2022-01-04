@@ -1,5 +1,164 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
+{% block title %} | Register {% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'accounts/css/accounts.min.css' %}" />
+    <link rel="canonical" href="https://www.bluishpink.com{% url 'register' %}"/>
+
+    <title>Register for an Account with Bluish Pink</title>
+    <meta name="description" content="Register with us that you may track your order and view your order history.">
+{% endblock %}
+
 {% block content %}
-<h1>Register</h1>
+
+<main class="register-login" style="height: calc(100vh + 16rem);">
+  <div class="register-login__container">
+    <h1 class="register-login__heading heading-1">Sign Up</h1>
+    <form method="POST" class="register-login__form">
+      {% csrf_token %}
+      <input
+        type="text"
+        name="first-name"
+        class="register-login__form__input"
+        placeholder="First Name"
+        aria-label="First name"
+        required
+      />
+      <input
+        type="text"
+        name="last-name"
+        class="register-login__form__input"
+        placeholder="Last Name"
+        aria-label="Last name"
+        required
+      />
+      <input
+        type="email"
+        name="email"
+        class="register-login__form__input"
+        placeholder="Email"
+        aria-label="Email"
+        required
+      />
+      <input
+        type="password"
+        name="password"
+        class="register-login__form__input"
+        id="account-password"
+        placeholder="Password"
+        aria-label="Password"
+        required
+      />
+      <input
+        type="password"
+        name="password-confirm"
+        class="register-login__form__input"
+        id="account-password-confirm"
+        placeholder="Confirm Password"
+        aria-label="Confirm password"
+        required
+      />
+      
+      <div class='comm_prefs'>
+        <div
+          class='comm_prefs__form_element'
+        >
+          <label
+            htmlFor="login-overlay-tc"
+            class='comm_prefs__form_element__label'
+          >
+            I have read and I accept the
+            <a href="{% url 'terms_and_conditions' %}">
+              terms and conditions
+            </a>.
+          </label>
+          <input type="checkbox" name="termsAccepted" id="login-overlay-tc" />
+        </div>
+        <div
+          class='comm_prefs__form_element'
+        >
+          <label
+            htmlFor="login-overlay-comm-prefs-promos"
+            class='comm_prefs__form_element__label'
+          >
+            Send me information on new promotions.
+          </label>
+          <input
+            type="checkbox"
+            name="commPrefBlogs"
+            id="login-overlay-comm-prefs-promos"
+          />
+        </div>
+        <div
+          class='comm_prefs__form_element'
+        >
+          <label
+            htmlFor="login-overlay-comm-prefs-blogs"
+            class='comm_prefs__form_element__label'
+          >
+            Send me information on new blog releases.
+          </label>
+          <input
+            type="checkbox"
+            name="commPrefBlogs"
+            id="login-overlay-comm-prefs-blogs"
+          />
+        </div>
+        <div
+          class='comm_prefs__form_element'
+        >
+          <label
+            htmlFor="login-overlay-comm-prefs-news"
+            class='comm_prefs__form_element__label'
+          >
+            Send me newsletters.
+          </label>
+          <input
+            type="checkbox"
+            name="commPrefNews"
+            id="login-overlay-comm-prefs-news"
+          />
+        </div>
+      </div>
+      <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">
+      <span
+        class="register-login__form__input--error alert alert--danger"
+        id="account-errors"
+      >
+      </span>
+      <div class="register-login__form__section">
+        <button
+          type="submit"
+          class="register-login__form__btn btn btn--primary"
+          id="account-submit"
+          aria-label="Register"
+        >Register
+        </button>
+        <a
+          href="{% url 'login' %}"
+          class="register-login__form__btn btn btn--secondary"
+          title="Login"
+        >Login
+        </a>
+      </div>
+      <a
+        class="text-link register-login__form__text-link"
+        href="{% url 'reset_password' %}"
+      >
+        Reset Password
+      </a>
+    </form>
+  </div>
+</main>
+
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{% block scripts %}
+  {% include 'partials/_recaptcha.html' %}
 {% endblock %}

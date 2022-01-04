@@ -1,5 +1,76 @@
 {% extends 'base.html' %}
 
+{% load static %}
+{% load humanize %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'accounts/css/accounts.min.css' %}" />
+  <link rel="canonical" href="https://www.bluishpink.com{% url 'login' %}"/>
+  <title>Login to your Bluish Pink Account</title>
+  <meta name="description" content="Login using your email, Facebook or Google account to access your profile where you can make enquiries, view your invoices and track your orders.">
+{% endblock %}
+
 {% block content %}
-<h1>Login</h1>
+
+<main class="register-login">
+  <div class="register-login__container">
+    <h1 class="register-login__heading heading-1">Login</h1>
+    <form method="POST" class="register-login__form">
+      {% csrf_token %}
+      <input
+        type="email"
+        name="email"
+        class="register-login__form__input"
+        placeholder="Email"
+        aria-label="Email"
+        required
+      />
+      <input
+        type="password"
+        name="password"
+        class="register-login__form__input"
+        placeholder="Password"
+        aria-label="Password"
+        required
+      />
+      <input type="hidden" name="next">
+      <span
+        class="register-login__form__input--error alert alert--danger"
+        id="register-errors"
+      >
+      </span>
+      <div class="register-login__form__section">
+        <button
+          type="submit"
+          class="register-login__form__btn btn btn--primary"
+          id="register-submit"
+          aria-label="Submit"
+        >Login
+        </button>
+        <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">
+        <a
+          href="{% url 'register' %}"
+          class="register-login__form__btn btn btn--secondary"
+          aria-label="Create account"
+          title="Create an account"
+          >Create Account
+        </a>
+      </div>
+      <a
+        class="text-link register-login__form__text-link"
+        href="{% url 'reset_password' %}"
+      >
+        Reset Password
+      </a>
+    </form>
+  </div>
+</main>
+
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{% block scripts %}
+  {% include 'partials/_recaptcha.html' %}
 {% endblock %}

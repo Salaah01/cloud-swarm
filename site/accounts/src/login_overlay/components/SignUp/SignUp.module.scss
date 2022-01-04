@@ -1,0 +1,13 @@
+@import "../login_sign_up.scss";
+
+.comm_prefs {
+  &__form_element {
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: flex-end;
+
+    &__label {
+      margin-left: 0.5rem;
+    }
+  }
+}

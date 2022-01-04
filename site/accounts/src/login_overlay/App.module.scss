@@ -1,0 +1,46 @@
+@import '../../../cloud_swarm/src/sass/abstracts/mixins';
+
+.outer_container {
+  position: fixed;
+  width: 100vw;
+  min-height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  background-color: rgba(34, 34, 34, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inner_container {
+  background-color: #fff;
+  max-height: 90vh;
+  overflow-y: scroll;
+  width: 70rem;
+  margin: 5rem 0;
+  padding: 5rem 6rem;
+  border-radius: 1rem;
+
+  @include mediaQuery(1000) {
+    width: 55rem;
+  }
+
+  @include mediaQuery(800) {
+    width: 70vw;
+  }
+
+  @include mediaQuery(600) {
+    width: 80vw;
+    padding: 3rem 4rem;
+  }
+
+  @include mediaQuery(400) {
+    padding: 2rem 3rem;
+  }
+
+  &::-webkit-scrollbar {
+    width: 0;
+    background-color: transparent;
+  }
+}

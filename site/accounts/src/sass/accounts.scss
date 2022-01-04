@@ -1,0 +1,149 @@
+@import "../../../cloud_swarm/src/sass/abstracts/variables";
+@import "../../../cloud_swarm/src/sass/abstracts/mixins";
+
+
+.register-login {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(37, 24, 24, 0.9)),
+    url("/static/accounts/img/washing-hands-1920w.jpg");
+  background-size: cover;
+  background-position: right;
+  z-index: -1;
+
+  &__container {
+    background-color: rgba(0, 0, 0, 0.55);
+    padding: 3rem 6rem 7rem;
+    margin-top: 6rem;
+    border-radius: 10px;
+    width: 50rem;
+
+    @include mediaQuery(540) {
+      width: 100vw;
+    }
+
+    @include mediaQuery(480) {
+      padding: 5rem 4rem 7rem;
+    }
+
+    @include mediaQuery(330) {
+      padding: 3rem 3rem 5rem;
+    }
+
+    @include mediaQuery(305) {
+      padding: 3rem 1rem 5rem;
+    }
+  }
+
+  &__heading {
+    margin-bottom: 3rem;
+    color: #808fff;
+    text-align: center;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+
+    &__section {
+      display: flex;
+      margin-top: 0.5rem;
+      & > :not(:last-child) {
+        margin-right: 1.5rem;
+      }
+    }
+
+    &__text-link {
+      margin-top: 1rem;
+      color: #fff;
+
+      &:hover {
+        color: #fff;
+        border-bottom: 1px solid #fff;
+      }
+    }
+
+    &__input {
+      height: 3rem;
+      padding: 2rem;
+      border-radius: 5px;
+      outline: none;
+      border: 1px solid $colour-grey-dark-1;
+      margin-bottom: 1rem;
+
+      &[invalid="true"] {
+        box-shadow: 0 0 1px 2px red;
+      }
+
+      &--error {
+        display: none;
+      }
+
+      &[invalid="true"] + &--error {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        width: 90vw;
+        z-index: 100;
+        position: absolute;
+        top: 0;
+        margin-top: 10rem;
+        text-align: center;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+
+    &__btn {
+      margin-bottom: 1rem;
+      text-align: center;
+      width: 50%;
+    }
+  }
+}
+
+.btn--facebook {
+  font-family: Lucida Grande, Helvetica Neue, Helvetica, Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 30px 15px 44px;
+  background-color: #3a5a97;
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 20, 0.4);
+  text-decoration: none;
+  line-height: 1;
+  position: relative;
+  border-radius: 5px;
+  width: 100%;
+  text-align: center;
+
+  & > .fa-facebook {
+    font-size: 1.85rem;
+    margin-right: 0.5rem;
+  }
+
+  &:hover {
+    background-color: rgba(#3a5a97, 0.8);
+  }
+}
+
+.comm_prefs {
+  color: #fff;
+
+  &__form_element {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+
+    &__label {
+      margin-left: 0.5rem;
+    }
+  }
+}
