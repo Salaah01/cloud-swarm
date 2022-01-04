@@ -21,7 +21,10 @@ class NewBenchmark(View):
     ) -> HttpResponse:
         """Renders the new benchmark form."""
         form = NewBenchmarkForm(user=request.user)
-        return render(request, 'benchmark/new_benchmark.html', {'form': form})
+        return render(request, 'benchmark/new_benchmark.html',{
+            'form': form,
+            'site': site,
+        })
 
     def post(
         self,

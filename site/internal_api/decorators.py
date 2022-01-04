@@ -22,7 +22,6 @@ def validate_jwt_payload(func):
         payload = decode_jwt(json.loads(request.body)['token'])
 
         if not payload['success']:
-            print(payload)
             return http.JsonResponse(payload, status=400)
         return func(request, payload['payload'], *args, **kwargs)
     return csrf_exempt(wrapper)

@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
 
 {% load static %}
+{% load site_tags %}
+
 {% block head %}
   <link rel='stylesheet' type="text/css" href="{% static 'sites/css/site.min.css' %}">
 {% endblock %}
 {% block content %}
 
   <nav
-    class="container"
+    class="container mt-5"
     style="--bs-breadcrumb-divider: '>';"
     aria-label="breadcrumb"
   >
@@ -22,12 +24,34 @@
   </nav>
 
   <main class="container">
-    <h1 class="heading-1 mb-0">{{ site.name }}</h1>
+    <div class="d-flex justify-content-between align-items-center">
+      <h1 class="heading-1 mb-0">{{ site.name }}</h1>
+      {% if site.verified %}
+        {% user_can_benchmark request.user site as can_benchmark %}
+        {% if can_benchmark %}
+          <a
+            class="btn btn--primary header-btn"
+            href="{% url 'benchmark:new_benchmark' site.id site.slug %}"
+          >
+            New Benchmark
+          </a>
+        {% endif %}
+      {% else %}
+        <input
+          type="button"
+          value="Verify Site"
+          id="verify-btn"
+          class="btn btn--primary header-btn"
+          data-id="{{ site.id }}"
+          data-slug="{{ site.slug }}"
+        />
+      {% endif %}
+    </div>
     <p class="heading-2 mb-0">{{ site.domain }}</p>
 
     <section>
       {% if site.verified %}
-        <p class="text-success">
+      <p class="text-success">
           <i class="fa fa-check-circle"></i>
           Verification Status: Verified
         </p>
@@ -47,20 +71,12 @@
         <pre><code>{{ site.txt_record }}</code></pre>
         <p>For a step-by-step guide, please <a href="#">click here</a>.</p>
         <p>Once added, please press the verify button.</p>
-        <input
-          type="button"
-          value="Verify"
-          id="verify-btn"
-          class="btn btn--primary"
-          data-id="{{ site.id }}"
-          data-slug="{{ site.slug }}"
-        />
       {% endif %}
     </section>
-    <section>
+    <section class="mt-5">
       <h2 class="heading">Benchmarks</h2>
       <table class="table benchmark-table">
-        <thead class="thead-dark">
+        <thead class="thead-dark mt-5">
           <tr>
             <th scope="col">Created On</th>
             <th scope="col">Scheduled For</th>
@@ -77,7 +93,9 @@
         <tbody>
           {% for benchmark in site.benchmarks.all %}
             <tr data-benchmark-id="{{ benchmark.id }}">
-              <td>{{ benchmark.created_on|date:"d-m-Y H:m" }}</td>
+              <td data-type="created-on">
+                {{ benchmark.created_on|date:"d-m-Y H:m" }}
+              </td>
               <td data-type="scheduled-on">
                 {% if benchmark.scheduled_on %}
                   {{ benchmark.scheduled_on|date:"d-m-Y H:m" }}
@@ -94,31 +112,35 @@
                   <span>{{ benchmark.progress.get_status_display }}</span>
                 </div>
               </td>
-              <td>{{ benchmark.num_servers }}</td>
-              <td>{{ benchmark.num_requests }}</td>
-              <td>
+              <td data-type="num-servers">{{ benchmark.num_servers }}</td>
+              <td data-type="num-requests">{{ benchmark.num_requests }}</td>
+              <td data-type="min-time">
                 {% if benchmark.min_time %}
                   {{ benchmark.min_time }}
                 {% else %}
                   -
                 {% endif %}
                 </td>
-              <td>
+              <td data-type="mean-time">
                 {% if benchmark.mean_time %}
                   {{ benchmark.mean_time }}
                 {% else %}
                   -
                 {% endif %}
                 </td>
-              <td>
+              <td data-type="max-time">
                 {% if benchmark.max_time %}
                   {{ benchmark.max_time }}
                 {% else %}
                   -
                 {% endif %}
               </td>
-              <td>{{ benchmark.completed_requests }}</td>
-              <td>{{ benchmark.failed_requests }}</td>
+              <td data-type="completed-requests">
+                {{ benchmark.completed_requests }}
+              </td>
+              <td data-type="failed-requests">
+                {{ benchmark.failed_requests }}
+              </td>
             </tr>
           {% endfor %}
         </tbody>

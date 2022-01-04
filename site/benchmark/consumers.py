@@ -1,5 +1,5 @@
 import typing as _t
-import datetime
+from datetime import datetime
 from asgiref.sync import sync_to_async, async_to_sync
 from django.contrib.auth.models import User
 from channels.generic.websocket import (
@@ -52,31 +52,56 @@ class BenchmarkProgressConsumer(AsyncJsonWebsocketConsumer):
         cls,
         site_id: int,
         benchmark_id: int,
-        new_status: str,
-        scheduled_on: _t.Optional[datetime.datetime] = None,
+        status: str,
+        num_servers: int,
+        num_requests: int,
+        completed_requests: int,
+        failed_requests: int,
+        created_on: _t.Optional[datetime] = None,
+        scheduled_on: _t.Optional[datetime] = None,
+        min_time: _t.Optional[int] = None,
+        mean_time: _t.Optional[int] = None,
+        max_time: _t.Optional[int] = None,
     ) -> None:
         """Send an update to the websocket.
 
         Args:
             site_id (int): The site id.
             benchmark_id (int): The benchmark id.
-            new_status (str): The new status.
+            status (str): The new status.
+            num_servers (int): The number of servers.
+            num_requests (int): The number of requests per server.
+            completed_requests (int): The number of completed requests.
+            failed_requests (int): The number of failed requests.
+            created_on (datetime): The time the benchmark was created.
+            scheduled_on (datetime): The time the benchmark was scheduled.
+            min_time (int): The minimum time in milliseconds.
+            mean_time (int): The mean time in milliseconds.
+            max_time (int): The maximum time in milliseconds.
         """
         group_name = get_site_group_name(site_id)
         channel_layer = get_channel_layer()
+        datetime_fmt = '%d-%m-%Y %H:%M'
         async_to_sync(channel_layer.group_send)(
             group_name,
             {
                 'type': 'benchmark_progress_update',
                 'message': {
                     'benchmark_id': benchmark_id,
-                    'status': new_status,
+                    'status': status,
+                    'num_servers': num_servers,
+                    'num_requests': num_requests,
+                    'completed_requests': completed_requests,
+                    'failed_requests': failed_requests,
+                    'created_on': created_on.strftime(datetime_fmt),
                     'scheduled_on': (
                         scheduled_on
-                        and scheduled_on.strftime('%d-%m-%Y %H:%M')
+                        and scheduled_on.strftime(datetime_fmt)
                         or None
-                    )
-
+                    ),
+                    'min_time': min_time,
+                    'mean_time': mean_time,
+                    'max_time': max_time,
                 }
             },
         )
@@ -98,5 +123,13 @@ class BenchmarkProgressConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json({
             'benchmark_id': message['benchmark_id'],
             'status': message['status'],
+            'num_servers': message['num_servers'],
+            'num_requests': message['num_requests'],
+            'completed_requests': message['completed_requests'],
+            'failed_requests': message['failed_requests'],
+            'created_on': message['created_on'],
             'scheduled_on': message['scheduled_on'],
+            'min_time': message['min_time'],
+            'mean_time': message['mean_time'],
+            'max_time': message['max_time'],
         })

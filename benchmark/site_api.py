@@ -30,7 +30,8 @@ def send_results(
     max_time: int,
     mean_time: int,
     completed_requests: int,
-    failed_requests: int
+    failed_requests: int,
+    sys_error_requests: int,
 ) -> None:
     """Sends the results of a benchmark to the site API.
     Args:
@@ -40,6 +41,7 @@ def send_results(
         mean_time (int): The mean time of the benchmark.
         completed_requests (int): The number of completed requests.
         failed_requests (int): The number of failed requests.
+        sys_error_requests (int): The number of system error requests.
     """
     payload = {
         'benchmark_id': benchmark_id,
@@ -47,7 +49,8 @@ def send_results(
         'max_time': max_time,
         'avg_time': mean_time,
         'complete_requests': completed_requests,
-        'failed_requests': failed_requests
+        'failed_requests': failed_requests,
+        'sys_error_requests': sys_error_requests,
     }
     token = create_jwt(payload)
     requests.post(

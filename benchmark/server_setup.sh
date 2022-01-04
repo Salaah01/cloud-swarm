@@ -8,11 +8,12 @@ while [ $wait_time -lt 30 ]; do
   sleep 5
   wait_time=$((wait_time + 5))
 
-  commands='sudo apt update;'
+  commands='sudo apt update'
   commands+='sudo apt upgrade -y;'
   commands+='sudo apt update;'
   commands+='sudo apt install -y apache2;'
 
+  ssh-keyscan -T 10 $1 >> ~/.ssh/known_hosts
   ssh -o "StrictHostKeyChecking no" ubuntu@$1 "$commands"
 
   if [ $? -eq 0 ]; then

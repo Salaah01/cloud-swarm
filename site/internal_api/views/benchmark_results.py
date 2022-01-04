@@ -14,8 +14,8 @@ def benchmark_results(request: HttpRequest, payload: dict) -> HttpResponse:
     benchmark.mean_time = payload['avg_time']
     benchmark.completed_requests = payload['complete_requests']
     benchmark.failed_requests = payload['failed_requests']
+    benchmark.sys_error_requests = payload['sys_error_requests']
 
-    # TODO: Add sys_error_requests
     benchmark.save()
     benchmark.progress.set_completed()
 

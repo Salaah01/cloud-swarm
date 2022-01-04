@@ -47,10 +47,18 @@ def on_benchmark_progress_update(
 
     # Send notification with new status.
     benchmark_consumers.BenchmarkProgressConsumer.send_status_update(
-        instance.benchmark.site_id,
-        instance.benchmark_id,
-        instance.get_status_display(),
-        instance.benchmark.scheduled_on,
+        site_id=instance.benchmark.site_id,
+        benchmark_id=instance.benchmark_id,
+        status=instance.get_status_display(),
+        num_servers=instance.benchmark.num_servers,
+        num_requests=instance.benchmark.num_requests,
+        completed_requests=instance.benchmark.completed_requests,
+        failed_requests=instance.benchmark.failed_requests,
+        created_on=instance.benchmark.created_on,
+        scheduled_on=instance.benchmark.scheduled_on,
+        min_time=instance.benchmark.min_time,
+        mean_time=instance.benchmark.mean_time,
+        max_time=instance.benchmark.max_time,
     )
 
 

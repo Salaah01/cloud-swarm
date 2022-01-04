@@ -9,11 +9,12 @@ mkdir -p "${base_dir}/results"
 
 wait_time=0
 
-while [ $wait_time -lt 90 ]; do
+while [ $wait_time -lt 35 ]; do
   sleep 5
   wait_time=$((wait_time + 5))
 
-  scp $user@$host:results.json "${base_dir}/results/${host}.json"
+  scp -o "StrictHostKeyChecking no" $user@$host:results.json "${base_dir}/results/${host}.json"
+  scp -o "StrictHostKeyChecking no" $user@$host:results.txt "${base_dir}/results/${host}.txt"
   if [ $? -eq 0 ]; then
     break
   fi

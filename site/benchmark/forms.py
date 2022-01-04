@@ -16,6 +16,10 @@ class NewBenchmarkForm(forms.ModelForm):
             site_models.SiteAccess.AuthLevels.MANAGER
         )
         self.fields['site'].empty_label = None
+        
+        # Add a class to all fields.
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
 
     def save(self, *args, **kwargs):
         benchmark = super().save(commit=False)

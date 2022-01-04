@@ -1,11 +1,39 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<main class="container">
-  <form method="post" class="form">
-    {{ form.as_p }}
-    {% csrf_token %}
-    <button type="submit" class="btn btn--primary">Submit</button>
-  </form>
-</main>
+
+  <nav
+    class="container mt-5"
+    style="--bs-breadcrumb-divider: '>';"
+    aria-label="breadcrumb"
+    >
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{% url 'sites:dashboard' %}">Sites</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="{% url 'sites:site' site.id site.slug %}">{{ site.name }}</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        New Benchmark
+      </li>
+    </ol>
+  </nav>
+
+  <main class="container">
+    <form method="post" class="form">
+      {% csrf_token %}
+      {% for hidden_field in form.hidden_fields %}
+        {{ hidden_field.errors }}
+        {{ hidden_field }}
+      {% endfor %}
+      {% for field in form.visible_fields %}
+        <div class="form-group mb-4">
+          {{ field.label_tag }}
+          {{ field }}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn--primary">Submit</button>
+    </form>
+  </main>
 {% endblock %}

@@ -19,6 +19,10 @@ class NewSiteForm(forms.ModelForm):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
+        # Add a class to all fields.
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
+
     def clean(self, *args, **kwargs):
         cleaned_data = super().clean(*args, **kwargs)
         if not cleaned_data.get('domain'):

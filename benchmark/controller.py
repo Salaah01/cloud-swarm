@@ -41,6 +41,8 @@ class SlaveNode:
             url (str): URL to benchmark
         """
         subprocess.call([
+
+
             'bash',
             os.path.join(BASE_DIR, 'benchmark_setup.sh'),
             self.host,
@@ -51,7 +53,7 @@ class SlaveNode:
 
     def benchmark_results(self):
         """Returns the results of the benchmark."""
-        subprocess.call([
+        return subprocess.call([
             'bash',
             os.path.join(BASE_DIR, 'benchmark_results.sh'),
             self.host
@@ -120,6 +122,7 @@ class MasterNode:
     def __enter__(self):
         """Enters the context manager."""
         self.spawn_nodes()
+        self.server_ssh_setup()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -145,6 +148,16 @@ class MasterNode:
         for instance in instances:
             self.nodes.append(SlaveNode(instance))
 
+    def server_ssh_setup(self) -> None:
+        """Adds the hosts to the known hosts file."""
+        ip_addresses = [instance.public_ip_address
+                        for instance in self.instances()]
+        subprocess.call([
+            'bash',
+            os.path.join(BASE_DIR, 'server_ssh_setup.sh'),
+            *ip_addresses
+        ])
+
     def terminate_nodes(self) -> None:
         """Terminates all the nodes."""
         ec2.terminate_instances(self.instances())
@@ -158,7 +171,7 @@ class MasterNode:
         """Lazy getter for when the benchmark run should start."""
         if not hasattr(self, '_benchmark_start_ts'):
             # Assume that it takes 1.5 seconds to schedule the benchmark.
-            ms_to_setup = 1500
+            ms_to_setup = 2000
             self._benchmark_start_ts = datetime.now() + timedelta(
                 milliseconds=len(self.nodes) * ms_to_setup
             )
@@ -204,14 +217,26 @@ class MasterNode:
             None
         """
         # Check that the benchmark has finished (base this on the scheduled
-        # start time).
-        if datetime.now() < self.benchmark_start_ts():
-            sleep_time = self.benchmark_start_ts() - datetime.now()
+        # start time). Add a buffer of 35 seconds, this is to account for
+        # the timeout param in the benchmark script.
+        start_time = self.benchmark_start_ts() + timedelta(minutes=1)
+        if datetime.now() < start_time:
+            sleep_time = start_time - datetime.now()
             print(
                 f'[{datetime.now().strftime("%H:%M")}] Results not ready, sleeping for {sleep_time}'  # noqa E501
             )
             time.sleep(sleep_time.total_seconds())
-        node.benchmark_results()
+
+        max_tries = 5
+        for _ in range(max_tries):
+            exit_code = node.benchmark_results()
+            if exit_code == 0:
+                break
+            print(
+                f'\033[91m[{datetime.now().strftime("%H:%M")}] Failed to get '
+                'benchmark results, retrying in 1 minute\033[0m'
+            )
+            time.sleep(60)
 
     def calculate_results(self) -> _t.Dict[str, _t.Any]:
         """Given the benchmark results from each node, calculates an overall
@@ -224,6 +249,7 @@ class MasterNode:
         self.benchmark_status_next_step()
         complete_requests = 0
         failed_requests = 0
+        sys_error_requests = 0
 
         # Extract the results from each node.
         results = []
@@ -231,9 +257,15 @@ class MasterNode:
             results_fp = os.path.join(BASE_DIR, 'results', f'{node.host}.json')
             if not os.path.exists(results_fp):
                 failed_requests += self.requests_per_node
+                sys_error_requests += self.requests_per_node
                 continue
             with open(results_fp, 'r') as f:
-                result = json.load(f)
+                try:
+                    result = json.load(f)
+                except json.JSONDecodeError:
+                    failed_requests += self.requests_per_node
+                    sys_error_requests += self.requests_per_node
+                    continue
             complete_requests += result['complete_requests']
             failed_requests += result['failed_requests']
             results.append(result)
@@ -250,7 +282,8 @@ class MasterNode:
             'max_time': max_time,
             'mean_time': mean_time,
             'completed_requests': complete_requests,
-            'failed_requests': failed_requests
+            'failed_requests': failed_requests,
+            'sys_error_requests': sys_error_requests,
         }
 
         site_api.send_results(benchmark_id=self.benchmark_id, **results)

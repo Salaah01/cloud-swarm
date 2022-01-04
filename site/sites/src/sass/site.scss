@@ -1,6 +1,10 @@
 @import "../../../cloud_swarm/src/sass/abstracts/variables";
 @import "../../../cloud_swarm/src/sass/components/spinner";
 
+.header-btn {
+  height: fit-content;
+}
+
 .benchmark-table {
   &__inner-container {
     display: flex;
