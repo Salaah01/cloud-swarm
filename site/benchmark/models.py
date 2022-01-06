@@ -165,4 +165,6 @@ class BenchmarkProgress(models.Model):
     def set_completed(self) -> None:
         """Set the benchmark progress to completed."""
         self.status = self.StatusChoices.COMPLETED
+        self.benchmark.site.last_benchmarked = self.benchmark.completed_on
+        self.benchmark.site.save()
         self.save()

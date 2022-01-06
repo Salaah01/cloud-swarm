@@ -31,7 +31,7 @@
         {% if can_benchmark %}
           <a
             class="btn btn--primary header-btn"
-            href="{% url 'benchmark:new_benchmark' site.id site.slug %}"
+            href="{% url 'benchmark:new_benchmark_for_site' site.id site.slug %}"
           >
             New Benchmark
           </a>

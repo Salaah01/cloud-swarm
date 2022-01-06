@@ -12,7 +12,7 @@ def register(request):
     """Register page."""
 
     if request.user.is_authenticated:
-        return redirect('index')
+        return redirect('pages:index')
 
     if request.method == 'POST':
         # commPrefKeys = fetch_config('sales')['comm_pref_keys']
@@ -54,7 +54,7 @@ def register(request):
         # ).save()
         messages.success(
             request, 'Congratulations! You have been registered')
-        return redirect('index')
+        return redirect('pages:index')
 
     else:
         context = {

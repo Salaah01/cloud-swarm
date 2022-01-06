@@ -12,7 +12,8 @@ class NewSiteForm(forms.ModelForm):
             'slug',
             'created_on',
             'last_benchmarked',
-            'txt_record'
+            'txt_record',
+            'last_verified',
         )
 
     def __init__(self, *args, **kwargs):

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+{% include 'pages/docs/partials/_breadcrumbs.html' with breadcrumbs=breadcrumbs  %}
+<main class="container mb-5">
+  <h1 class="heading-1">Documentation</h1>
+  <div>
+    <h2 class="heading-2">1. Create Account</h2>
+    <p>
+      The very first step you need to take in order to get started is to
+      <a href="{% url 'register' %}" target="_blank">create an account</a>.
+    </p>
+  </div>
+  <div>
+    <h2 class="heading-2">2. Register a Site</h2>
+    <p>
+      Add a new site to your account by clicking the "Add Site" button on the
+      <a href="{% url 'sites:dashboard' %}" target="_blank">Sites</a> page.
+    </p>
+    <p>
+      Complete the form entering the details requested and submit.
+    </p>
+  </div>
+  <div>
+    <h2 class="heading-2">3. Update DNS Settings</h2>
+    <p>
+      Once you have completed the site registration form, you will be directed
+      to your site dashboard.
+    </p>
+    <p>
+      Below is an example of what we should see assuming we had registered
+      Bluish Pink in the previous step:
+    </p>
+    <img src="{% static 'pages/img/docs/unverified-site.jpg' %}" alt="Unverified Site" class="img-fluid border px-4 py-3">
+    <p>
+      Couple things to notice:
+    </p>
+    <ul>
+      <ol>1. Site is unverified</ol>
+      <ol>2. A random set of characters</ol>
+      <ol>3. A verify site button</ol>
+    </ul>
+    <p>
+      Our site is intended to be used for testing purposes only. However, we do
+      see the potential for abuse. Therefore, we require that you verify your
+      site before you are able to start using our services.
+    </p>
+    <p>
+      In order to verify your site, you will need to update your DNS settings and
+      create a TXT record with the key provided by us (point 2).
+    </p>
+    <p>
+      Using the example above, we would create a TXT record with the following
+      settings:
+    </p>
+    <div class="border px-4 py-3">
+      <p><strong>Type:</strong> TXT</p>
+      <p><strong>Hostname:</strong> @</p>
+      <p><strong>Value:</strong> cloud-swarm-verification=4c972f6b7b8d47255bb078a6230d0edf5dd25b1e757eacdd31b7370f3e53b3a6</p>
+    </div>
+    <p>
+      Once you have created the TXT record, you will be able to verify your site
+      by clicking the "Verify Site" button.
+    </p>
+    <p>Once verified, your site page should look like the example below:</p>
+    <img src="{% static 'pages/img/docs/verified-site.jpg' %}" alt="Unverified Site" class="img-fluid border px-4 py-3">
+  </div>
+  <div>
+    <h2 class="heading-2">4. Run Benchmark</h2>
+    <p>
+      Click on the "New Benchmark" button to start a new benchmark. You will be
+      directed to a page where you can select your benchmark parameters.
+    </p>
+    <p>
+      <strong>Number of Server:</strong> The number of servers you want to run
+      the benchmark on. Each server would have its own IP address. This is an
+      important feature we provide as some servers can throttle requests
+      coming from the same IP address.
+    </p>
+    <p>
+      <strong>Number of Requests:</strong> The number of requests you want to
+      send to from each server.
+    </p>
+    <p>
+      Once you are ready, click on "Submit" and you will be directed back to
+      the site page from where you will be able to monitor the benchmark.
+    </p>
+  </div>
+
+</main>
+{% endblock %}

@@ -8,23 +8,39 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a
+              class="nav-link {% if 'sites' in request.path %}active{% endif %}"
+              href="{% url 'sites:dashboard' %}"
+            >
+              Sites
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'benchmark' in request.path %}active{% endif %}" href="{% url 'benchmark:new_benchmark' %}">Benchmark</a>
+          </li>
+        {% endif %}
         <li class="nav-item">
-          <a
-            class="nav-link {% if 'sites' in request.path %}active{% endif %}"
-            href="{% url 'sites:dashboard' %}"
-          >
-            Sites
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link {% if 'benchmark' in request.path %}active{% endif %}" href="#">Benchmark</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link {% if 'docs' in request.path %}active{% endif %}" href="#">Docs</a>
+          <a class="nav-link {% if 'docs' in request.path %}active{% endif %}" href="{% url 'pages:docs:index' %}">Docs</a>
         </li>
         <li class="nav-item">
           <a class="nav-link {% if 'pricing' in request.path %}active{% endif %}" href="#">Pricing</a>
         </li>
+      </ul>
+      <ul class="navbar-nav justify-content-end">
+        {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+          </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'login' %}?next={% url 'sites:dashboard' %}">
+            Login
+          </a>
+        </li>
+        {% endif %}
+      </ul>
     </div>
   </div>
 </nav>

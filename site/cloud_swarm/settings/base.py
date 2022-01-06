@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django_extensions',
     'channels',
     'pages',
     'accounts',
@@ -74,6 +75,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'cloud_swarm.context_processors.root_domain',
+
             ],
         },
     },
@@ -83,6 +86,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'cloud_swarm.wsgi.application'
 ASGI_APPLICATION = 'cloud_swarm.asgi.application'
 
+
+ROOT_DOMAIN = 'https://cloud-swarm.com'
+SITE_NAME = 'Cloud Swarm'
+SOCIAL = {}
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases

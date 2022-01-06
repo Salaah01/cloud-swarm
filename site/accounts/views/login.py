@@ -10,7 +10,7 @@ def login(request):
     """Login page."""
 
     if request.user.is_authenticated:
-        return redirect('index')
+        return redirect('pages:index')
 
     if request.method == 'POST':
 

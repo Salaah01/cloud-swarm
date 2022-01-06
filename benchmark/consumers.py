@@ -19,6 +19,8 @@ class BenchmarkConsumer:
 
     def run(self):
         """Runs the consumer."""
+
+        # Listen for new messages and action.
         for message in self.consumer.listen():
             if message['type'] != 'message':
                 continue
@@ -59,7 +61,7 @@ class BenchmarkConsumer:
     ) -> None:
         """Processes messages received via the `benchmark_new` channel.
         The method will add a benchmark to the queue and run if it is possible.
-        
+
         Args:
             benchmark_id: The ID of the benchmark.
             domain: The domain to benchmark.

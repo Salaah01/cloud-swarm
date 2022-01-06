@@ -1,0 +1,22 @@
+<nav
+  class="container mt-5"
+  style="--bs-breadcrumb-divider: '>';"
+  aria-label="breadcrumb"
+  >
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="{% url 'pages:index' %}">Home</a>
+    </li>
+    {% for item in breadcrumbs %}
+      {% if item.index <= breadcrumbs_index %}
+        <li class="breadcrumb-item{% if item.index == breadcrumbs_index %} active{% endif %}">
+          {% if item.index == breadcrumbs_index %}
+            {{ item.label }}
+          {% else %}
+            <a href="{{ item.url }}">{{ item.label }}</a>
+          {% endif %}
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ol>
+</nav>
