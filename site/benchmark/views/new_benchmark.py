@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.views import View
 from django.utils.decorators import method_decorator
 from sites import models as site_models
-from sites.decorators import required_site_access
+from sites.decorators import required_site_access, require_verified_site
 from ..forms import NewBenchmarkForm
 
 
@@ -14,6 +14,7 @@ __all__ = ['NewBenchmarkForSite', 'NewBenchmark']
 
 
 @method_decorator(required_site_access, name='dispatch')
+@method_decorator(require_verified_site, name='dispatch')
 class NewBenchmarkForSite(View):
     """View for creating a new benchmark for a given site."""
 

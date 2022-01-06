@@ -6,6 +6,7 @@ from . import models as site_models
 
 def required_site_access(func):
     """Decorator to check if user has access to a site."""
+
     @wraps(func)
     @login_required
     def wrapper(
@@ -27,5 +28,24 @@ def required_site_access(func):
         site_access = site_models.SiteAccess.user_access(site, request.user)
         if site_access is None:
             return http.HttpResponseNotFound()
-        return func(request, site, site_access, *args, **kwargs)
+        return func(request, site=site, site_access=site_access, *args, **kwargs)
+    return wrapper
+
+
+def require_verified_site(func):
+    """Decorator which requires that the site is verified."""
+
+    @wraps(func)
+    def wrapper(
+        request: http.HttpRequest,
+        *args,
+        **kwargs
+    ) -> http.HttpResponse:
+        """Wrapper function."""
+        site = kwargs.get('site')
+        if site is None:
+            return http.HttpResponseNotFound()
+        if not site.verify():
+            return http.HttpResponseForbidden()
+        return func(request, *args, **kwargs)
     return wrapper

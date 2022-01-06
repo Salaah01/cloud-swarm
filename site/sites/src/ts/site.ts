@@ -155,13 +155,17 @@ const benchmarkProgress = () => {
 }
 
 const main = () => {
-  const verifyBtn = document.querySelector('#verify-btn') as HTMLButtonElement;
-  const id = parseInt(verifyBtn.dataset.id as string, 10);
-  const slug = verifyBtn.dataset.slug as string;
-  verifyBtn.addEventListener('click', () => {
-    verificationCheck(id, slug);
-  });
-  benchmarkProgress();
+  const verifyBtn = document.querySelector('#verify-btn') as HTMLButtonElement | null;
+  if (verifyBtn) {
+    const id = parseInt(verifyBtn.dataset.id as string, 10);
+    const slug = verifyBtn.dataset.slug as string;
+    verifyBtn.addEventListener('click', () => {
+      verificationCheck(id, slug);
+    });
+  }
+  else {
+    benchmarkProgress();
+  }
 }
 
 main();

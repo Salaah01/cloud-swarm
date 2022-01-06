@@ -20,7 +20,7 @@ def gen_txt_record(domain: str, created_on: datetime) -> str:
         str: The TXT record.
     """
     code = hashlib.sha256(f'{domain}{created_on}'.encode('utf-8')).hexdigest()
-    return f'web-horde-verification={code}'
+    return f'cloud-swarm-verification={code}'
 
 
 # Models
