@@ -70,7 +70,7 @@ class NewBenchmark(View):
         if not form.is_valid():
             messages.error(request, form.errors)
             return HttpResponseRedirect(
-                reverse('benchmark:new_benchmark_for_site')
+                reverse('benchmark:new_benchmark')
             )
         form.save()
         return HttpResponseRedirect(

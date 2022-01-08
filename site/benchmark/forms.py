@@ -29,6 +29,33 @@ class NewBenchmarkForm(forms.ModelForm):
             )
         self.fields['site'].empty_label = None
 
+    def clean_site(self):
+        site = self.cleaned_data['site']
+        if site is None:
+            raise forms.ValidationError(
+                'Please select a site.',
+                code='invalid'
+            )
+
+        user_access = site_models.SiteAccess.user_access(site, self.user)
+        if user_access is None:
+            raise forms.ValidationError(
+                'You do not have access to this site.',
+                code='invalid'
+            )
+        if not user_access.user_has_manager_access():
+            raise forms.ValidationError(
+                'You do not have access to benchmark this site.',
+                code='invalid'
+            )
+
+        if not site.verify():
+            raise forms.ValidationError(
+                'Site not verified.',
+                code='invalid'
+            )
+        return site
+
     def save(self, *args, **kwargs):
         benchmark = super().save(commit=False)
         benchmark.requested_by = self.user

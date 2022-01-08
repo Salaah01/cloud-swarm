@@ -28,7 +28,13 @@ def required_site_access(func):
         site_access = site_models.SiteAccess.user_access(site, request.user)
         if site_access is None:
             return http.HttpResponseNotFound()
-        return func(request, site=site, site_access=site_access, *args, **kwargs)
+        return func(
+            request,
+            site=site,
+            site_access=site_access,
+            *args,
+            **kwargs
+        )
     return wrapper
 
 
