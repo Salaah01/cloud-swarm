@@ -3,11 +3,11 @@ import hashlib
 from datetime import datetime, timedelta
 from django.db import models
 from django.urls import reverse
-from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.text import slugify
 from django.conf import settings
 from dns import resolver
+from accounts import models as account_models
 
 
 # Utilities
@@ -41,15 +41,19 @@ class Site(models.Model):
     def __str__(self):
         return f'{self.name} ({self.domain})'
 
-    def add_user(self, user: User, auth_level: int) -> 'SiteAccess':
-        """Add a user to the site.
+    def add_account(
+        self,
+        account: account_models.Account,
+        auth_level: int
+    ) -> 'SiteAccess':
+        """Add an account to the site.
         Args:
-            user (User): The user to add.
+            account (account_models.Account): The account to add.
             auth_level (int): The authorization level.
         """
         site_access = SiteAccess.objects.create(
             site=self,
-            user=user,
+            account=account,
             auth_level=auth_level
         )
         site_access.save()
@@ -116,29 +120,29 @@ class Site(models.Model):
             return None
 
     @classmethod
-    def for_user(
+    def for_account(
         cls,
-        user: User,
+        account: account_models.Account,
         auth_level: int = 0,
     ) -> models.QuerySet['Site']:
-        """Get all sites for a user.
+        """Get all sites for a account.
         Args:
-            user (User): The user to get sites for.
-            auth_level (int): The user's auth level.
+            account (account_models.Account): The account.
+            auth_level (int): The account's auth level.
         """
-        if not user or not user.is_authenticated:
+        if account is None:
             return cls.objects.none()
 
         return cls.objects.filter(
             id__in=SiteAccess.objects.filter(
-                user=user,
+                account=account,
                 auth_level__gte=auth_level,
             ).values_list('site_id', flat=True),
         )
 
 
 class SiteAccess(models.Model):
-    """Represents a table which contains sites, the users who have
+    """Represents a table which contains sites, the accounts who have
     access to them and their authorisation.
     """
 
@@ -149,64 +153,67 @@ class SiteAccess(models.Model):
         ADMIN = 2
 
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    account = models.ForeignKey(
+        account_models.Account,
+        on_delete=models.CASCADE
+    )
     auth_level = models.IntegerField(choices=AuthLevels.choices)
     created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['created_on', 'site', 'user']
+        ordering = ['-created_on', 'site', ]
         verbose_name_plural = 'Site Accesses'
-        unique_together = ('site', 'user')
+        unique_together = ('site', 'account')
 
     def __str__(self):
-        return f'{self.site} - {self.user} ({self.auth_level})'
+        return f'{self.site} - {self.account} ({self.auth_level})'
 
-    def user_has_admin_access(self):
-        """Check if the user has admin access."""
+    def account_has_admin_access(self):
+        """Check if the account has admin access."""
         return self.auth_level == self.AuthLevels.ADMIN
 
-    def user_has_manager_access(self):
-        """Check if the user has manager access."""
+    def account_has_manager_access(self):
+        """Check if the account has manager access."""
         return self.auth_level in [
             self.AuthLevels.MANAGER,
             self.AuthLevels.ADMIN
         ]
 
-    def user_has_view_access(self):
-        """Check if the user has view access."""
+    def account_has_view_access(self):
+        """Check if the account has view access."""
         return self.auth_level in [
             self.AuthLevels.VIEW_ONLY,
             self.AuthLevels.MANAGER,
             self.AuthLevels.ADMIN
         ]
 
-    def user_has_auth(self, auth_level: int) -> bool:
-        """Check if the user has the given auth level.
+    def account_has_auth(self, auth_level: int) -> bool:
+        """Check if the acc has the given auth level.
         Args:
             auth_level (int): The auth level to check.
         Returns:
-            bool: True if the user has the given auth level.
+            bool: True if the acc has the given auth level.
         """
         return self.auth_level >= auth_level
 
     @classmethod
-    def user_access(
+    def account_access(
         cls,
         site: Site,
-        user: User
+        account: account_models.Account
     ) -> _t.Union['SiteAccess', None]:
-        """Get the site access record for a user.
+        """Get the site access record for an account.
         Args:
             site (Site): The site to get access for.
-            user (User): The user to get access for.
+            account (account_models.Account): The account to get access for.
         """
-        if not user or not user.is_authenticated:
+        if account is None:
             return None
 
         try:
             return cls.objects.get(
                 site=site,
-                user=user,
+                account=account,
             )
         except cls.DoesNotExist:
             return None
@@ -216,7 +223,10 @@ class VerificationCheckLog(models.Model):
     """A log of verification checks."""
 
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    account = models.ForeignKey(
+        account_models.Account,
+        on_delete=models.CASCADE
+    )
     created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -244,15 +254,16 @@ class VerificationCheckLog(models.Model):
         ).exists()
 
     @classmethod
-    def add_log(cls, site: Site, user: User) -> 'VerificationCheckLog':
+    def add_log(
+        cls,
+        site: Site,
+        account: account_models.Account
+    ) -> 'VerificationCheckLog':
         """Add a verification check log.
         Args:
             site (Site): The site to check.
-            user (User): The user to check.
+            account (account_models.Account): The account to check.
         """
-        log = cls.objects.create(
-            site=site,
-            user=user,
-        )
+        log = cls.objects.create(site=site, account=account)
         log.save()
         return log

@@ -25,7 +25,7 @@ class NewBenchmarkForSite(View):
         site_access: site_models.SiteAccess
     ) -> HttpResponse:
         """Renders the new benchmark form."""
-        form = NewBenchmarkForm(user=request.user, site=site)
+        form = NewBenchmarkForm(account=request.account, site=site)
         return render(request, 'benchmark/new_benchmark_for_site.html', {
             'form': form,
             'site': site,
@@ -38,7 +38,11 @@ class NewBenchmarkForSite(View):
         site_access: site_models.SiteAccess
     ) -> HttpResponse:
         """Handles the POST request."""
-        form = NewBenchmarkForm(request.POST, user=request.user, site=site)
+        form = NewBenchmarkForm(
+            request.POST,
+            account=request.account,
+            site=site
+        )
         if not form.is_valid():
             messages.error(request, form.errors)
             return HttpResponseRedirect(
@@ -59,14 +63,14 @@ class NewBenchmark(View):
 
     def get(self, request: HttpRequest) -> HttpResponse:
         """Renders the new benchmark form."""
-        form = NewBenchmarkForm(user=request.user)
+        form = NewBenchmarkForm(account=request.account)
         return render(request, 'benchmark/new_benchmark.html', {
             'form': form,
         })
 
     def post(self, request: HttpRequest) -> HttpResponse:
         """Handles the POST request."""
-        form = NewBenchmarkForm(request.POST, user=request.user)
+        form = NewBenchmarkForm(request.POST, account=request.account)
         if not form.is_valid():
             messages.error(request, form.errors)
             return HttpResponseRedirect(

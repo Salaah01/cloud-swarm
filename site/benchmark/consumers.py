@@ -1,13 +1,14 @@
 import typing as _t
 from datetime import datetime
 from asgiref.sync import sync_to_async, async_to_sync
-from django.contrib.auth.models import User
 from channels.generic.websocket import (
     AsyncJsonWebsocketConsumer,
     DenyConnection
 )
 from channels.layers import get_channel_layer
+from channels.db import database_sync_to_async
 from sites import models as site_models
+from accounts import models as account_models
 
 
 def get_site_group_name(site_id: int) -> str:
@@ -23,13 +24,10 @@ class BenchmarkProgressConsumer(AsyncJsonWebsocketConsumer):
 
     async def connect(self):
         """Connect to the websocket."""
-        user = self.scope['user']
-        if user.is_anonymous:
-            raise DenyConnection()
+        account = await self.get_account()
 
         site_id = self.scope['url_route']['kwargs']['site_id']
-
-        await sync_to_async(self.get_site)(site_id, user)
+        await sync_to_async(self.get_site)(site_id, account)
 
         group_name = get_site_group_name(site_id)
         await self.channel_layer.group_add(
@@ -106,16 +104,38 @@ class BenchmarkProgressConsumer(AsyncJsonWebsocketConsumer):
             },
         )
 
-    def get_site(self, site_id: int, user: User) -> site_models.Site:
-        """Get the site for the user."""
+    @database_sync_to_async
+    def get_site(
+        self,
+        site_id: int,
+        account: account_models.Account
+    ) -> site_models.Site:
+        """Get the site for the account."""
         site = site_models.Site.objects.filter(
             id=site_id
         ).first()
         if not site:
             raise DenyConnection()
-        if not site_models.SiteAccess.user_access(site, user):
+        if not site_models.SiteAccess.account_access(
+            site,
+            account_models.Account
+        ):
             raise DenyConnection()
         return site
+
+    @database_sync_to_async
+    def get_account(self) -> account_models.Account:
+        """Get the account for the user."""
+        user_id = self.scope['user'].id
+        if user_id is None:
+            raise DenyConnection()
+
+        account = account_models.Account.objects.filter(
+            user_id=user_id).first()
+        if not account:
+            raise DenyConnection()
+
+        return account
 
     async def benchmark_progress_update(self, event):
         """Handle an update from the benchmark."""

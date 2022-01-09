@@ -2,8 +2,8 @@ import typing as _t
 from datetime import timedelta
 from django import dispatch
 from django.db import models
-from django.contrib.auth.models import User
 from sites import models as site_models
+from accounts import models as account_models
 
 
 NEW_BENCHMARK = dispatch.Signal()
@@ -17,7 +17,10 @@ class Benchmark(models.Model):
         on_delete=models.CASCADE,
         related_name='benchmarks'
     )
-    requested_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    requested_by = models.ForeignKey(
+        account_models.Account,
+        on_delete=models.CASCADE
+    )
     created_on = models.DateTimeField(auto_now_add=True)
     num_servers = models.PositiveIntegerField(
         default=1,
@@ -64,9 +67,9 @@ class Benchmark(models.Model):
         return cls.objects.filter(site=site)
 
     @classmethod
-    def for_user(cls, user: User):
-        """Return all benchmark queues for a user."""
-        return cls.objects.filter(requested_by=user)
+    def for_account(cls, account: account_models.Account):
+        """Return all benchmark queues for an account."""
+        return cls.objects.filter(requested_by=Account)
 
     @classmethod
     def not_started(cls):

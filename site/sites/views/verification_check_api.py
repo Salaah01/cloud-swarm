@@ -26,7 +26,7 @@ def verification_check_api(
             'requests.'
         })
 
-    site_models.VerificationCheckLog.add_log(site, request.user)
+    site_models.VerificationCheckLog.add_log(site, request.account)
 
     return JsonResponse({
         'success': True,

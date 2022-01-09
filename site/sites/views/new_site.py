@@ -19,11 +19,11 @@ class NewSite(View):
 
     def post(self, request: HttpRequest) -> HttpResponse:
         """POST request handler."""
-        form = forms.NewSiteForm(request.POST, user=request.user)
+        form = forms.NewSiteForm(request.POST, account=request.account)
         if not form.is_valid():
             messages.error(request, form.errors)
             return render(request, 'sites/new_site.html', {'form': form})
-        site = form.save(request.user)
+        site = form.save()
         messages.success(request, 'Site created.')
         return HttpResponseRedirect(
             reverse('sites:site', args=[site.id, site.slug])

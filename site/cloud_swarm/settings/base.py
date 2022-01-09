@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'channels',
     'pages',
+    'packages',
     'accounts',
     'sites',
     'benchmark',
@@ -59,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.account_middleware',
 ]
 
 ROOT_URLCONF = 'cloud_swarm.urls'

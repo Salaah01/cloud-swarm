@@ -20,7 +20,7 @@ class SiteAdmin(admin.ModelAdmin):
 
 @admin.register(models.VerificationCheckLog)
 class VerificationCheckLogAdmin(admin.ModelAdmin):
-    list_display = ('site', 'created_on', 'user')
+    list_display = ('site', 'created_on', 'account')
     list_filter = ('created_on',)
-    search_fields = ('site__name', 'site__domain', 'user__username')
+    search_fields = ('site__name', 'site__domain', 'account__user__username')
     ordering = ('-created_on',)

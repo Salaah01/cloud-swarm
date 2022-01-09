@@ -1,14 +1,16 @@
 from django import template
-from django.contrib.auth.models import User
+from accounts.models import Account
 from .. import models as site_models
 
 register = template.Library()
 
 
 @register.simple_tag
-def user_can_benchmark(user: User, site: site_models.Site) -> bool:
+def user_can_benchmark(account: Account, site: site_models.Site) -> bool:
     """Returns whether the user can benchmark the site."""
-    user_access = site_models.SiteAccess.user_access(site, user)
-    if not user_access:
+    account_access = site_models.SiteAccess.account_access(site, account)
+    if not account_access:
         return False
-    return user_access.user_has_auth(site_models.SiteAccess.AuthLevels.MANAGER)
+    return account_access.account_has_auth(
+        site_models.SiteAccess.AuthLevels.MANAGER
+    )

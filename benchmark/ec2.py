@@ -68,6 +68,7 @@ def terminate_instances(instances) -> None:
         instance.wait_until_terminated()
     print('\033[92mTerminated instances\033[0m')
 
+
 def _setup_instance(instance) -> None:
     """Setups the instance by running a setup script once it is ready.
     Args:

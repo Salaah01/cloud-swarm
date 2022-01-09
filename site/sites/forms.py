@@ -17,7 +17,7 @@ class NewSiteForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
+        self.account = kwargs.pop('account', None)
         super().__init__(*args, **kwargs)
 
         # Add a class to all fields.
@@ -29,7 +29,7 @@ class NewSiteForm(forms.ModelForm):
         if not cleaned_data.get('domain'):
             return cleaned_data
         if site_models.SiteAccess.objects.filter(
-            user=self.user,
+            account=self.account,
             site__domain=cleaned_data['domain']
         ).exists():
             raise forms.ValidationError(
@@ -53,11 +53,14 @@ class NewSiteForm(forms.ModelForm):
         return domain
 
     def save(self, *args, **kwargs):
-        # When a new site is created, set the user as a owner.
+        # When a new site is created, set the account as a owner.
         site = super().save(*args, **kwargs)
 
-        # A user should exist, but just in case.
-        if self.user:
-            site.add_user(self.user, site_models.SiteAccess.AuthLevels.ADMIN)
+        # An account should exist, but just in case.
+        if self.account:
+            site.add_account(
+                self.account,
+                site_models.SiteAccess.AuthLevels.ADMIN
+            )
 
         return site

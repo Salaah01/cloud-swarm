@@ -25,7 +25,10 @@ def required_site_access(func):
         site = site_models.Site.for_id_slug(id, slug)
         if site is None:
             return http.HttpResponseNotFound()
-        site_access = site_models.SiteAccess.user_access(site, request.user)
+        site_access = site_models.SiteAccess.account_access(
+            site,
+            request.account
+        )
         if site_access is None:
             return http.HttpResponseNotFound()
         return func(

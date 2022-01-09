@@ -8,7 +8,7 @@ class NewBenchmarkForm(forms.ModelForm):
     """Form for creating a new benchmark."""
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')
+        self.account = kwargs.pop('account')
         site = (kwargs.pop('site', None))
         super().__init__(*args, **kwargs)
         self.setup_site_field(site)
@@ -23,8 +23,8 @@ class NewBenchmarkForm(forms.ModelForm):
             self.fields['site'].widget = forms.HiddenInput()
             self.fields['site'].required = False
         else:
-            self.fields['site'].queryset = site_models.Site.for_user(
-                self.user,
+            self.fields['site'].queryset = site_models.Site.for_account(
+                self.account,
                 site_models.SiteAccess.AuthLevels.MANAGER
             )
         self.fields['site'].empty_label = None
@@ -37,13 +37,16 @@ class NewBenchmarkForm(forms.ModelForm):
                 code='invalid'
             )
 
-        user_access = site_models.SiteAccess.user_access(site, self.user)
-        if user_access is None:
+        account_access = site_models.SiteAccess.account_access(
+            site,
+            self.account
+        )
+        if account_access is None:
             raise forms.ValidationError(
                 'You do not have access to this site.',
                 code='invalid'
             )
-        if not user_access.user_has_manager_access():
+        if not account_access.account_has_manager_access():
             raise forms.ValidationError(
                 'You do not have access to benchmark this site.',
                 code='invalid'
@@ -58,7 +61,7 @@ class NewBenchmarkForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         benchmark = super().save(commit=False)
-        benchmark.requested_by = self.user
+        benchmark.requested_by = self.account
         benchmark.save()
         return benchmark
 

@@ -27,7 +27,7 @@
     <div class="d-flex justify-content-between align-items-center">
       <h1 class="heading-1 mb-0">{{ site.name }}</h1>
       {% if site.verified %}
-        {% user_can_benchmark request.user site as can_benchmark %}
+        {% user_can_benchmark request.account site as can_benchmark %}
         {% if can_benchmark %}
           <a
             class="btn btn--primary header-btn"

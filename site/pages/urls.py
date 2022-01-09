@@ -9,6 +9,10 @@ urlpatterns = [
         include(([
             path('', views.docs.index, name='index'),
         ], 'docs'), namespace='docs'),
-
+    ),
+    path(
+        'terms-and-conditions/',
+        views.terms_and_conditions,
+        name='terms_and_conditions'
     ),
 ]
