@@ -2,7 +2,8 @@
   "cSpell.words": [
     "asgi",
     "asgiref",
-    "boto"
+    "boto",
+    "privs"
   ],
   "python.linting.enabled": true
 }

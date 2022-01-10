@@ -1,6 +1,13 @@
+import typing as _t
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+from django import dispatch
 from django.db import models
 from django.contrib.auth.models import User
 from packages import models as package_models
+
+
+NEW_ACCOUNT_PACKAGE = dispatch.Signal()
 
 
 class Account(models.Model):
@@ -12,8 +19,70 @@ class Account(models.Model):
     )
     expiry_date = models.DateField(null=True, blank=True)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._package = self.package
+        self._expiry_date = self.expiry_date
+
     def __str__(self):
         return f'{self.user} - {self.package}'
+
+    def save(self, *args, **kwargs):
+        """Overrides the save method. If the package or expiry date has
+        changed, then send a signal to add a new history record.
+        """
+        changed = any([
+            not self.id,
+            self._package != self.package,
+            self._expiry_date != self.expiry_date,
+        ])
+        instance = super().save(*args, **kwargs)
+        if changed:
+            NEW_ACCOUNT_PACKAGE.send(sender=self.__class__, instance=self)
+        return instance
+
+    @property
+    def latest_history(self) -> datetime:
+        """Returns the latest package history record."""
+        return self.package_history.latest('created_on')
+
+    @property
+    def package_start_on(self) -> datetime:
+        """Returns the start date of the package."""
+        return self.latest_history.created_on
+
+    @property
+    def refresh_period_start_on(self) -> datetime:
+        """Returns the start date of the refresh period."""
+        return self.refresh_period_end_on - timedelta(
+            days=self.package.refresh_period
+        )
+
+    @property
+    def refresh_period_end_on(self) -> datetime:
+        """Returns the end date of the curren   t cycle before the benchmark
+        quota refreshes.
+        """
+        today = datetime.now(ZoneInfo('UTC'))
+        focus_date = self.package_start_on
+        refresh_period = self.package.refresh_period
+
+        while focus_date < today:
+            focus_date += timedelta(days=refresh_period)
+
+        return focus_date
+
+    @property
+    def remaining_quota(self):
+        """Number of benchmarks that can be run before the next refresh."""
+        return self.package.quota - self.benchmarks.filter(
+            created_on__gte=self.package_start_on
+        ).count()
+
+    @property
+    def can_run_benchmark(self) -> bool:
+        """Determine if the account can run another benchmark."""
+        return self.remaining_quota > 0
 
     @classmethod
     def new_free_account(cls, user: User):
@@ -26,13 +95,18 @@ class Account(models.Model):
 
 class PackageHistory(models.Model):
     """Represents the package history of an account."""
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        related_name='package_history'
+    )
     package = models.ForeignKey(
         package_models.Package,
         on_delete=models.PROTECT,
     )
     created_on = models.DateTimeField(auto_now_add=True)
     expiry_date = models.DateField(null=True, blank=True)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
 
     class Meta:
         verbose_name = 'Package History'
@@ -47,3 +121,16 @@ class PackageHistory(models.Model):
         else:
             expiry_date = 'None'
         return f'[{created_on}-{expiry_date}] {self.account}'
+
+    @classmethod
+    def new_package_history(cls, account: Account) -> 'PackageHistory':
+        """Create a new package history for the given account."""
+        package = account.package
+        rec = cls.objects.create(
+            account=account,
+            package=package,
+            price=package.price,
+            expiry_date=account.expiry_date,
+        )
+        rec.save()
+        return rec

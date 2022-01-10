@@ -27,14 +27,29 @@
     <div class="d-flex justify-content-between align-items-center">
       <h1 class="heading-1 mb-0">{{ site.name }}</h1>
       {% if site.verified %}
-        {% user_can_benchmark request.account site as can_benchmark %}
-        {% if can_benchmark %}
-          <a
-            class="btn btn--primary header-btn"
-            href="{% url 'benchmark:new_benchmark_for_site' site.id site.slug %}"
-          >
-            New Benchmark
-          </a>
+        {% has_benchmark_privileges request.account site as has_benchmark_privs %}
+        {% if has_benchmark_privs %}
+          {% if account.can_run_benchmark %}
+            <a
+              class="btn btn--primary header-btn"
+              href="{% url 'benchmark:new_benchmark_for_site' site.id site.slug %}"
+            >
+              New Benchmark
+            </a>
+          {% else %}
+            <div class="d-flex flex-column align-items-end">
+              <a
+                class="btn btn--primary header-btn"
+                href="{% url 'pages:prices' %}"
+              >
+                Upgrade Subscription
+              </a>
+              <p>
+                Quota refreshes on
+                {{ request.account.refresh_period_end_on|date:"F j, Y" }}
+              </p>
+            </div>
+          {% endif %}
         {% endif %}
       {% else %}
         <input

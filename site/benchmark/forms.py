@@ -59,6 +59,18 @@ class NewBenchmarkForm(forms.ModelForm):
             )
         return site
 
+    def clean(self, *args, **kwargs):
+        cleaned_data = super().clean(*args, **kwargs)
+        self.clean_account()
+        return cleaned_data
+
+    def clean_account(self):
+        if not self.account.can_run_benchmark:
+            raise forms.ValidationError(
+                'You cannot run anymore benchmarks as you have passed your '
+                'quote'
+            )
+
     def save(self, *args, **kwargs):
         benchmark = super().save(commit=False)
         benchmark.requested_by = self.account

@@ -19,7 +19,8 @@ class Benchmark(models.Model):
     )
     requested_by = models.ForeignKey(
         account_models.Account,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='benchmarks'
     )
     created_on = models.DateTimeField(auto_now_add=True)
     num_servers = models.PositiveIntegerField(

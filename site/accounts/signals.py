@@ -8,3 +8,18 @@ from . import models as accounts_models
 def create_account(sender, instance: User, created: bool, **kwargs):
     if created:
         accounts_models.Account.new_free_account(instance)
+
+
+def on_new_account_package(
+    sender,
+    instance: accounts_models.Account,
+    **kwargs
+):
+    """Create a new package history record."""
+    accounts_models.PackageHistory.new_package_history(instance)
+
+
+accounts_models.NEW_ACCOUNT_PACKAGE.connect(
+    on_new_account_package,
+    accounts_models.Account,
+)
