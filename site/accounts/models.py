@@ -1,13 +1,21 @@
-import typing as _t
 from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
 from django import dispatch
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import User
 from packages import models as package_models
 
 
 NEW_ACCOUNT_PACKAGE = dispatch.Signal()
+
+
+class ActiveManager(models.Manager):
+    def active(self):
+        return self.get_queryset().filter(
+            created_on__lt=timezone.now(),
+            expiry_date__isnull=False,
+            expiry_date__gt=timezone.now()
+        )
 
 
 class Account(models.Model):
@@ -47,36 +55,24 @@ class Account(models.Model):
         return self.package_history.latest('created_on')
 
     @property
-    def package_start_on(self) -> datetime:
-        """Returns the start date of the package."""
-        return self.latest_history.created_on
-
-    @property
-    def refresh_period_start_on(self) -> datetime:
-        """Returns the start date of the refresh period."""
-        return self.refresh_period_end_on - timedelta(
-            days=self.package.refresh_period
-        )
-
-    @property
-    def refresh_period_end_on(self) -> datetime:
-        """Returns the end date of the curren   t cycle before the benchmark
-        quota refreshes.
-        """
-        today = datetime.now(ZoneInfo('UTC'))
-        focus_date = self.package_start_on
-        refresh_period = self.package.refresh_period
-
-        while focus_date < today:
-            focus_date += timedelta(days=refresh_period)
-
-        return focus_date
-
-    @property
     def remaining_quota(self):
         """Number of benchmarks that can be run before the next refresh."""
-        return self.package.quota - self.benchmarks.filter(
-            created_on__gte=self.package_start_on
+        package_history = self.package_history.active()
+
+        # Scenario where user does not have any paid packages. Thus, check
+        # remaining quota on their free package.
+        if not package_history:
+            return self.package.quota - self.benchmarks.filter(
+                created_on__gte=self.latest_history.created_on
+            ).count()
+
+        # Scenario where user has paid packages.
+        start_date = package_history.earliest('created_on').created_on
+        total_quota = package_history.aggregate(
+            models.Sum('package__quota')
+        )['package__quota__sum']
+        return total_quota - self.benchmarks.filter(
+            created_on__gte=start_date
         ).count()
 
     @property
@@ -105,13 +101,36 @@ class PackageHistory(models.Model):
         on_delete=models.PROTECT,
     )
     created_on = models.DateTimeField(auto_now_add=True)
-    expiry_date = models.DateField(null=True, blank=True)
+    expiry_date = models.DateTimeField(null=True, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
+
+    objects = ActiveManager()
 
     class Meta:
         verbose_name = 'Package History'
         verbose_name_plural = 'Package History'
         ordering = ['-created_on', '-expiry_date']
+
+    @property
+    def refresh_period_start_on(self) -> datetime:
+        """Returns the start date of the refresh period."""
+        return self.refresh_period_end_on - timedelta(
+            days=self.package.refresh_period
+        )
+
+    @property
+    def refresh_period_end_on(self) -> datetime:
+        """Returns the end date of the curren   t cycle before the benchmark
+        quota refreshes.
+        """
+        today = timezone.now()
+        focus_date = self.created_on
+        refresh_period = self.package.refresh_period
+
+        while focus_date < today:
+            focus_date += timedelta(days=refresh_period)
+
+        return focus_date
 
     def __str__(self):
         fmt = '%Y-%m-%d'

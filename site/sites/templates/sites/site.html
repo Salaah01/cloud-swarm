@@ -46,7 +46,7 @@
               </a>
               <p>
                 Quota refreshes on
-                {{ request.account.refresh_period_end_on|date:"F j, Y" }}
+                {{ request.account.latest_history.refresh_period_end_on|date:"F j, Y" }}
               </p>
             </div>
           {% endif %}

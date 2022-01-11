@@ -15,7 +15,6 @@ class AccountAdmin(admin.ModelAdmin):
         'user',
         'package',
         'expiry_date',
-        'refresh_period_end_on',
         'remaining_quota',
     )
     raw_id_fields = ('user',)

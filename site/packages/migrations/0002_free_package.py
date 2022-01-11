@@ -7,7 +7,6 @@ def create_free_package(apps, schema_editor):
     """Create the free package."""
     Package = apps.get_model('packages', 'Package')
     Package.objects.create(
-        id=1,
         name='Free',
         description='Free package',
         price=0,

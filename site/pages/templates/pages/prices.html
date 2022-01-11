@@ -1,5 +1,44 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Prices</h1>
+<main class="container mt-5">
+  <h1 class="heading-1">Prices</h1>
+  <div class="cards">
+    <div class="row">
+      {% for package in packages %}
+      <div class="col-sm-6">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="heading-3 card-title">{{ package.name }}</h2>
+            <p>£{{ package.price|floatformat:2 }}</p>
+            <p class="card-text">{{ package.description }}</p>
+            <div>
+              <p>
+                Benchmark Limit:
+                <span>{{ package.quota }} every {{ package.refresh_period }} days</span>
+              </p>
+              <p>
+                Maximum Concurrent Servers:
+                <span>{{ package.instances }}</span>
+              </p>
+              <p>
+                Maximum Requests per Server:
+                <span>{{ package.requests }}</span>
+              </p>
+            </div>
+            {% if package.id in owned_packages %}
+              <p>Owned</p>
+            {% else %}
+            <a href="#" class="btn btn--primary">Go somewhere</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</main>
+{{ owned_packages }}
+
+
 {% endblock %}
