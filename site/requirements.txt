@@ -8,5 +8,6 @@ dnspython==2.1.0
 psycopg2==2.9.2
 pyjwt==2.3.0
 selenium==4.1.0
+stripe==2.64.0
 webdriver-manager==3.5.2
 xhtml2pdf==0.2.5

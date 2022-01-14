@@ -4,6 +4,9 @@
   "description": "Cloud Swarm site.",
   "main": "index.js",
   "private": true,
+  "workspaces": [
+    "payments"
+  ],
   "scripts": {
     "start": "concurrently \"npm run watch:main\" \"npm run watch:sites\"",
     "build": "npm-run-all build:*",

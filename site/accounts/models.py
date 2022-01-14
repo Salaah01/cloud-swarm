@@ -12,6 +12,7 @@ NEW_ACCOUNT_PACKAGE = dispatch.Signal()
 class ActiveManager(models.Manager):
     def active(self):
         return self.get_queryset().filter(
+            paid_on__isnull=False,
             created_on__lt=timezone.now(),
             expiry_date__isnull=False,
             expiry_date__gt=timezone.now()
@@ -103,6 +104,7 @@ class PackageHistory(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     expiry_date = models.DateTimeField(null=True, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
+    paid_on = models.DateTimeField(null=True, blank=True)
 
     objects = ActiveManager()
 
@@ -153,3 +155,25 @@ class PackageHistory(models.Model):
         )
         rec.save()
         return rec
+
+
+class BillingAddress(models.Model):
+    """Represents the billing address of an account."""
+    account = models.OneToOneField(Account, on_delete=models.CASCADE)
+    address_line_1 = models.CharField(max_length=255)
+    address_line_2 = models.CharField(max_length=255, blank=True)
+    city = models.CharField(max_length=100)
+    country = models.CharField(max_length=100)
+    postcode = models.CharField(
+        max_length=10,
+        null=True,
+        blank=True,
+        verbose_name='Postcode/Zip Code'
+    )
+
+    class Meta:
+        verbose_name = 'Billing Address'
+        verbose_name_plural = 'Billing Addresses'
+
+    def __str__(self):
+        return f'{self.account} - {self.street_address}'

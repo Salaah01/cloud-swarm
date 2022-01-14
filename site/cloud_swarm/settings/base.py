@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'sites',
     'benchmark',
     'internal_api',
+    'payments',
 ]
 
 
