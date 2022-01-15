@@ -24,6 +24,7 @@ urlpatterns = [
             namespace='internal_api'
         )
     ),
+    path('payments/', include(('payments.urls', 'payments'), namespace='payments')),
 ]
 
 # Static Files

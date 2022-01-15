@@ -1,0 +1,16 @@
+{% extends 'payments/base.html' %}
+
+{% block content %}
+  <form id="payment-form" method="POST" action="{% url post_location %}">
+    <div id="card-element">
+      {# Elements will create input elements here #}
+    </div>
+
+    {# We'll put the error messages in this element #}
+    <div id="card-element-errors" role="alert"></div>
+    <button id='stripe-form-submit' type="submit" class="btn btn--primary">
+      Subscribe
+    </button>
+  </form>
+  {{ block.super }}
+{% endblock %}

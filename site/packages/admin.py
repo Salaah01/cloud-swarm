@@ -7,7 +7,7 @@ class PackageAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'price',
-        'package_duration',
+        'one_time_package',
         'instances',
         'requests',
         'refresh_period',

@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "start": "concurrently \"npm run watch:main\" \"npm run watch:sites\"",
+    "start": "concurrently \"npm run dev:ts\"",
     "build": "npm-run-all build:*",
     "dev:ts": "webpack --config webpack.dev.js ./src/subscription.ts  --output ./static/payments/subscription.min.js --watch --progress",
     "build:ts": "webpack --config webpack.prod.js ./sites/src/ts/site.ts  --output ./sites/static/sites/js/site.min.js --progress",
@@ -74,6 +74,7 @@
     "@stripe/react-stripe-js": "^1.4.0",
     "@stripe/stripe-js": "^1.13.1",
     "@types/facebook-pixel": "0.0.22",
+    "@types/stripe-v3": "^3.1.26",
     "axios": "^0.21.4",
     "cairo": "0.1.0-alpha.3",
     "caniuse-lite": "^1.0.30001207",

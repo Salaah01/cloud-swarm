@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<script src="https://js.stripe.com/v3/" defer></script>
+<script src="{% static 'payments/subscription.min.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+<form id="payment-form" method="POST" action="{% url post_location %}">
+  
+  <div id="card-element">
+    {# Elements will create input elements here #}
+  </div>
+
+    {% csrf_token %}
+    {# We'll put the error messages in this element #}
+    <div id="card-element-errors" role="alert"></div>
+    <input type="hidden" id="stripe-key" value="{{ stripe_pub_key }}">
+    <input type="hidden" id="client-secret" value="{{ client_secret }}">
+    <button id='stripe-form-submit' type="submit" class="btn btn--primary">
+      Subscribe
+    </button>
+    {% block hidden-inputs %}
+    {% endblock hidden-inputs %}
+</form>
+{% endblock content %}

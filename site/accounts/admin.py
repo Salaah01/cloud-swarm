@@ -2,9 +2,12 @@ from django.contrib import admin
 from . import models
 
 
-class PackageHistoryInline(admin.TabularInline):
-    """Inline for PackageHistory."""
+class BillingAddressInline(admin.StackedInline):
+    model = models.BillingAddress
+    extra = 0
 
+
+class PackageHistoryInline(admin.TabularInline):
     model = models.PackageHistory
     extra = 0
 
@@ -18,4 +21,7 @@ class AccountAdmin(admin.ModelAdmin):
         'remaining_quota',
     )
     raw_id_fields = ('user',)
-    inlines = (PackageHistoryInline,)
+    inlines = (
+        BillingAddressInline,
+        PackageHistoryInline,
+    )

@@ -1,10 +1,11 @@
+import typing as _t
 from datetime import datetime, timedelta
 from django import dispatch
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from packages import models as package_models
-
+from payments import model_mixins as payment_mixins
 
 NEW_ACCOUNT_PACKAGE = dispatch.Signal()
 
@@ -19,7 +20,7 @@ class ActiveManager(models.Manager):
         )
 
 
-class Account(models.Model):
+class Account(models.Model, payment_mixins.StripeCustomerMixin):
     """Represents a package associated with an account."""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     package = models.ForeignKey(
@@ -49,6 +50,18 @@ class Account(models.Model):
         if changed:
             NEW_ACCOUNT_PACKAGE.send(sender=self.__class__, instance=self)
         return instance
+
+    def get_stripe_address(self) -> _t.Union['BillingAddress', None]:
+        """Requirement of the `StripeCustomerMixin` interface."""
+        return self.billing_address
+
+    @property
+    def billing_address(self) -> _t.Union['BillingAddress', None]:
+        """Returns the billing address associated with this account."""
+        try:
+            return self.billingaddress
+        except BillingAddress.DoesNotExist:
+            return None
 
     @property
     def latest_history(self) -> datetime:
@@ -157,7 +170,7 @@ class PackageHistory(models.Model):
         return rec
 
 
-class BillingAddress(models.Model):
+class BillingAddress(models.Model, payment_mixins.StripeAddressMixin):
     """Represents the billing address of an account."""
     account = models.OneToOneField(Account, on_delete=models.CASCADE)
     address_line_1 = models.CharField(max_length=255)
@@ -171,9 +184,18 @@ class BillingAddress(models.Model):
         verbose_name='Postcode/Zip Code'
     )
 
+    STRIPE_ADDRESS_FIELDS = {
+        'line1': 'address_line_1',
+        'line2': 'address_line_2',
+        'city': 'city',
+        'state': None,
+        'postal_code': 'postcode',
+        'country': 'country',
+    }
+
     class Meta:
         verbose_name = 'Billing Address'
         verbose_name_plural = 'Billing Addresses'
 
     def __str__(self):
-        return f'{self.account} - {self.street_address}'
+        return f'{self.account} - {self.address_line_1}'
