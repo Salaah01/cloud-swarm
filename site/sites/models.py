@@ -88,7 +88,7 @@ class Site(models.Model):
         if self.last_verified is None:
             return False
         return self.last_verified > timezone.now() - timedelta(
-            hours=settings.SITES_VERIFY_DURATION_SECS
+            seconds=settings.SITES_VERIFY_DURATION_SECS
         )
 
     def verify(self, force: bool = False) -> bool:
