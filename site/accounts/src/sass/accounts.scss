@@ -9,8 +9,9 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(37, 24, 24, 0.9)),
-    url("/static/accounts/img/washing-hands-1920w.jpg");
+  background-color: black;
+  // background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(37, 24, 24, 0.9)),
+  //   url("/static/accounts/img/washing-hands-1920w.jpg");
   background-size: cover;
   background-position: right;
   z-index: -1;

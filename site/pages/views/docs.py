@@ -7,7 +7,7 @@ def breadcrumbs():
     return [
         {
             'index': 10,
-            'url': reverse('pages:docs:index'),
+            'url': reverse('docs:index'),
             'label': 'Documentation',
         },
     ]

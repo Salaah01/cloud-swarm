@@ -15,7 +15,7 @@
   >
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
-        <a href="{% url 'sites:dashboard' %}">Sites</a>
+        <a href="{% url 'sites-dashboard' %}">Sites</a>
       </li>
       <li class="breadcrumb-item active" aria-current="page">
         {{ site.name }}
@@ -32,7 +32,7 @@
           {% if account.can_run_benchmark %}
             <a
               class="btn btn--primary header-btn"
-              href="{% url 'benchmark:new_benchmark_for_site' site.id site.slug %}"
+              href="{% url 'new_benchmark_for_site' site.id site.slug %}"
             >
               New Benchmark
             </a>
@@ -40,7 +40,7 @@
             <div class="d-flex flex-column align-items-end">
               <a
                 class="btn btn--primary header-btn"
-                href="{% url 'pages:prices' %}"
+                href="{% url 'prices' %}"
               >
                 Upgrade Subscription
               </a>

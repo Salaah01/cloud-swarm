@@ -2,6 +2,7 @@ import typing as _t
 from datetime import timedelta
 from django import dispatch
 from django.db import models
+from django.utils import timezone
 from sites import models as site_models
 from accounts import models as account_models
 
@@ -70,7 +71,7 @@ class Benchmark(models.Model):
     @classmethod
     def for_account(cls, account: account_models.Account):
         """Return all benchmark queues for an account."""
-        return cls.objects.filter(requested_by=Account)
+        return cls.objects.filter(requested_by=account)
 
     @classmethod
     def not_started(cls):
@@ -109,13 +110,13 @@ class Benchmark(models.Model):
             started_on__isnull=False,
             completed_on__isnull=False
         )
-        if records.count() == 0:
+        records_count = records.count()
+        if not records_count:
             return None
         total_seconds = sum(
             (record.completed_on - record.started_on).total_seconds()
             for record in records
         )
-        records_count = records.count()
         return timedelta(seconds=total_seconds / records_count)
 
 
@@ -169,6 +170,10 @@ class BenchmarkProgress(models.Model):
     def set_completed(self) -> None:
         """Set the benchmark progress to completed."""
         self.status = self.StatusChoices.COMPLETED
+        # The completed on time may not have been set if the controlling API
+        # was not available.
+        if self.benchmark.completed_on is None:
+            self.benchmark.completed_on = timezone.now()
         self.benchmark.site.last_benchmarked = self.benchmark.completed_on
         self.benchmark.site.save()
         self.save()

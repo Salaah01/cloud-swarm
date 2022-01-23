@@ -73,7 +73,7 @@ class Site(models.Model):
     @property
     def absolute_url(self) -> str:
         """Get the absolute URL for a site record."""
-        return reverse('sites:site', args=[self.id, self.slug])
+        return reverse('site', args=[self.id, self.slug])
 
     @property
     def previously_verified(self) -> bool:

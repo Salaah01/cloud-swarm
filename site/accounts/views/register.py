@@ -12,10 +12,9 @@ def register(request):
     """Register page."""
 
     if request.user.is_authenticated:
-        return redirect('pages:index')
+        return redirect('index')
 
     if request.method == 'POST':
-        # commPrefKeys = fetch_config('sales')['comm_pref_keys']
 
         # Validate recaptcha
         if not verify_recaptcha(request.POST.get('g-recaptcha-response')):
@@ -23,12 +22,9 @@ def register(request):
             return redirect('register')
 
         # Check that the terms and conditions have been accepted.
-        # if not request.POST.get(commPrefKeys['termsAccepted']):
-        #     messages.error(
-        #         request,
-        #         'Please read and accept the terms and conditions.'
-        #     )
-        #     return redirect('register')
+        if not request.POST.get('termsAccepted'):
+            messages.error(request, 'You must accept the terms and conditions')
+            return redirect('register')
 
         user_sign_up = utils.sign_up_user(
             request,
@@ -43,18 +39,9 @@ def register(request):
             messages.error(request, user_sign_up.error)
             return redirect('register')
 
-        # Update the user's communication preferences.
-        # CommPrefs.objects.create(
-        #     user=user_sign_up.retuned_object,
-        #     promotions=bool(request.POST.get(commPrefKeys['promotions'])),
-        #     blogs=bool(request.POST.get(commPrefKeys['blogs'])),
-        #     newsletters=bool(
-        #         request.POST.get(commPrefKeys['newsletters'])
-        #     ),
-        # ).save()
         messages.success(
             request, 'Congratulations! You have been registered')
-        return redirect('pages:index')
+        return redirect('index')
 
     else:
         context = {

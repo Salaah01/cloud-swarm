@@ -2,7 +2,7 @@
 
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
-from ..views import change_password, login, profile, register
+from ..views import change_password, login, register
 
 
 class TestUrls(SimpleTestCase):
@@ -20,13 +20,6 @@ class TestUrls(SimpleTestCase):
         self.assertEquals(
             resolve(reverse('login')).func,
             login
-        )
-
-    def test_profile(self) -> None:
-        """Tests that the profile URL resolves correctly."""
-        self.assertEquals(
-            resolve(reverse('profile')).func,
-            profile
         )
 
     def test_register(self) -> None:

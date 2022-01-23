@@ -2,7 +2,6 @@
 
 from django.test import TestCase
 from django.contrib.auth import models as auth_models
-from django.shortcuts import reverse
 from core_functions import unittest_helpers
 from accounts import utils
 

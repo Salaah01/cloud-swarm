@@ -10,21 +10,12 @@ admin.site.site_title = 'Web Horde Admin'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(('pages.urls', 'pages'), namespace='pages')),
+    path('', include('pages.urls')),
     path('accounts/', include('accounts.urls')),
-    path('sites/', include(('sites.urls', 'sites'), namespace='sites')),
-    path(
-        'benchmark/',
-        include(('benchmark.urls', 'benchmark'), namespace='benchmark')
-    ),
-    path(
-        'internal-api/',
-        include(
-            ('internal_api.urls', 'internal_api'),
-            namespace='internal_api'
-        )
-    ),
-    path('payments/', include(('payments.urls', 'payments'), namespace='payments')),
+    path('sites/', include('sites.urls')),
+    path('benchmark/', include('benchmark.urls')),
+    path('internal-api/', include('internal_api.urls')),
+    path('payments/', include('payments.urls')),
 ]
 
 # Static Files

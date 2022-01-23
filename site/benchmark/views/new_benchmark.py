@@ -47,13 +47,13 @@ class NewBenchmarkForSite(View):
             messages.error(request, form.errors)
             return HttpResponseRedirect(
                 reverse(
-                    'benchmark:new_benchmark_for_site',
+                    'new_benchmark_for_site',
                     args=[site.id, site.slug]
                 )
             )
         form.save()
         return HttpResponseRedirect(
-            reverse('sites:site', args=[site.id, site.slug])
+            reverse('site', args=[site.id, site.slug])
         )
 
 
@@ -74,9 +74,9 @@ class NewBenchmark(View):
         if not form.is_valid():
             messages.error(request, form.errors)
             return HttpResponseRedirect(
-                reverse('benchmark:new_benchmark')
+                reverse('new_benchmark')
             )
         form.save()
         return HttpResponseRedirect(
-            reverse('sites:dashboard')
+            reverse('sites-dashboard')
         )

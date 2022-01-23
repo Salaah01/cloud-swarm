@@ -7,11 +7,15 @@ from . import models as benchmark_models
 class NewBenchmarkForm(forms.ModelForm):
     """Form for creating a new benchmark."""
 
+    class Meta:
+        model = benchmark_models.Benchmark
+        fields = ['site', 'num_servers', 'num_requests']
+
     def __init__(self, *args, **kwargs):
         self.account = kwargs.pop('account')
-        site = (kwargs.pop('site', None))
+        self.site = (kwargs.pop('site', None))
         super().__init__(*args, **kwargs)
-        self.setup_site_field(site)
+        self.setup_site_field(self.site)
 
         # Add a class to all fields.
         for field in self.fields.values():
@@ -22,6 +26,7 @@ class NewBenchmarkForm(forms.ModelForm):
             self.fields['site'].initial = site
             self.fields['site'].widget = forms.HiddenInput()
             self.fields['site'].required = False
+            self.fields['site'].value = site
         else:
             self.fields['site'].queryset = site_models.Site.for_account(
                 self.account,
@@ -30,7 +35,7 @@ class NewBenchmarkForm(forms.ModelForm):
         self.fields['site'].empty_label = None
 
     def clean_site(self):
-        site = self.cleaned_data['site']
+        site = self.cleaned_data['site'] or self.site
         if site is None:
             raise forms.ValidationError(
                 'Please select a site.',
@@ -67,8 +72,8 @@ class NewBenchmarkForm(forms.ModelForm):
     def clean_account(self):
         if not self.account.can_run_benchmark:
             raise forms.ValidationError(
-                'You cannot run anymore benchmarks as you have passed your '
-                'quote'
+                'You cannot run anymore benchmarks as you have exceeded your '
+                'quota'
             )
 
     def save(self, *args, **kwargs):
@@ -76,7 +81,3 @@ class NewBenchmarkForm(forms.ModelForm):
         benchmark.requested_by = self.account
         benchmark.save()
         return benchmark
-
-    class Meta:
-        model = benchmark_models.Benchmark
-        fields = ['site', 'num_servers', 'num_requests']

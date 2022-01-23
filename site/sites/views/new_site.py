@@ -26,5 +26,5 @@ class NewSite(View):
         site = form.save()
         messages.success(request, 'Site created.')
         return HttpResponseRedirect(
-            reverse('sites:site', args=[site.id, site.slug])
+            reverse('site', args=[site.id, site.slug])
         )
